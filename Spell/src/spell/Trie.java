@@ -82,22 +82,35 @@ public class Trie implements ITrie{
     }
 
     public int wordCountHelper(INode rootNode){
-        // if we hit an empty node, return 0
+        // create and set variables
+        boolean childPresent = false;
+        INode child;
+
+        // ----- BASE CASE 1 -----
+        //  if we hit an empty node, return 0
         if(rootNode == null)
             return 0;
-        // otherwise, look at each of the children
-        int sum = 0;
-        INode child;
+
+        // ----- BASE CASE 2 -----
+        // check if root node has any children
         for(int i=0; i<26; i++){
-            // for each child, check children and so on
             child = rootNode.getChildren()[i];
-            sum += nodeCountHelp(child);
+            if(child != null){
+                childPresent = true;
+                break;
+            }
         }
-        if(rootNode.getValue() == 0)
-            return 0;
-        if(sum != 0)
-            return 1 + sum;
-        return 1;
+        // if there is not a child present and if there is a word at the node, return 1 (it's a leaf)
+        // if there is not a word at the node, return a 0 (it's an invalid word)
+        if(!childPresent){
+            if(rootNode.getValue() != 0)
+                return 1;
+            else
+                return 0;
+        }
+
+        // ----- RECURSIVE CASE -----
+
     }
 
     @Override
