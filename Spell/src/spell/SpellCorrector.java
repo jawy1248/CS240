@@ -32,7 +32,16 @@ public class SpellCorrector implements ISpellCorrector{
         // if not, create change 1 candidates
         String ch1Can = getCandidates(inputWord);
         // create a map of each of the valid words and their counts
-        
+        INode temp;
+        StringBuilder validCans = new StringBuilder();
+        var scanner = new Scanner(ch1Can);
+        while(scanner.hasNext()){
+            temp = dict.find(scanner.next());
+            if(temp != null) {
+                // if it is a valid word, add the word to valid word canidates.
+//                validCans.append(temp);
+            }
+        }
 
         return ch1Can;
     }
