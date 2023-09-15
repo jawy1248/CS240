@@ -30,6 +30,12 @@ public class SpellTest {
     }
 
     @Test
+    @DisplayName("Testing Delete")
+    public void testDelete(){
+        studentCorrector.suggestSimilarWord("tea");
+    }
+
+    @Test
     @DisplayName("Valid Word Testing")
     public void testValidWord(){
         String suggestedWord = test(WORD_FILENAME, WORD);

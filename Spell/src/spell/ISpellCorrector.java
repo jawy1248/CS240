@@ -31,4 +31,5 @@ public interface ISpellCorrector {
 	 * @return the suggestion or null if there is no similar word in the dictionary
 	 */
 	String suggestSimilarWord(String inputWord);
+
 }
