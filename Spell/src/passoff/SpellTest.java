@@ -29,11 +29,12 @@ public class SpellTest {
         }
     }
 
-    @Test
-    @DisplayName("Testing Delete")
-    public void testDelete(){
-        studentCorrector.suggestSimilarWord("tea");
-    }
+//    @Test
+//    @DisplayName("Personal Testing")
+//    public void testDelete() throws IOException {
+//        studentCorrector.useDictionary(WORDS_FILENAME);
+//        studentCorrector.suggestSimilarWord("yeahy");
+//    }
 
     @Test
     @DisplayName("Valid Word Testing")

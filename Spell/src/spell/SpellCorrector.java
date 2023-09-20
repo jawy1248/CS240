@@ -22,6 +22,9 @@ public class SpellCorrector implements ISpellCorrector{
 
     @Override
     public String suggestSimilarWord(String inputWord) {
+        if(inputWord.isEmpty())
+            return null;
+
         inputWord = inputWord.toLowerCase();
         INode choice;
         // look for word in trie, if it is there...return it. It is a valid word.
@@ -29,21 +32,68 @@ public class SpellCorrector implements ISpellCorrector{
         if(choice != null)
             return inputWord;
 
-        // if not, create change 1 candidates
+        // if not, create change 1 candidates and make sure they are valid
         String ch1Can = getCandidates(inputWord);
-        // create a map of each of the valid words and their counts
-        INode temp;
+        StringBuilder validCans = new StringBuilder(getValidCandidates(ch1Can));
+
+        // if there are words in the validCans list, return the best
+        if(!validCans.isEmpty())
+            return chooseBest(validCans.toString());
+
+        // if no valid change 1 candidates, get change 2 candidates and validate them
+        Scanner scanner = new Scanner(ch1Can);
+        String tempScan;
+        StringBuilder ch2Can = new StringBuilder();
+        while(scanner.hasNext()) {
+            tempScan = scanner.next();
+            ch2Can.append(getCandidates(tempScan));
+        }
+        validCans = new StringBuilder(getValidCandidates(ch2Can.toString()));
+
+        // if there are words in the validCans list, return the best
+        if(!validCans.isEmpty())
+            return chooseBest(validCans.toString());
+
+        // if no best choices now, return null
+        return null;
+    }
+
+    private String getValidCandidates(String cans){
+        INode tempNode;
+        String tempScan;
         StringBuilder validCans = new StringBuilder();
-        var scanner = new Scanner(ch1Can);
+        var scanner = new Scanner(cans);
         while(scanner.hasNext()){
-            temp = dict.find(scanner.next());
-            if(temp != null) {
+            tempScan = scanner.next();
+            tempNode = dict.find(tempScan);
+            if(tempNode != null) {
                 // if it is a valid word, add the word to valid word canidates.
-//                validCans.append(temp);
+                validCans.append(tempScan);
+                validCans.append("\n");
             }
         }
+        return validCans.toString();
+    }
 
-        return ch1Can;
+    private String chooseBest(String validCans){
+        // from valid candidates, check frequency and return the one with the highest
+        int val;
+        int maxVal = 0;
+        String tempScan;
+        INode tempNode;
+        String currBest = null;
+        Scanner scanner = new Scanner(validCans);
+
+        while (scanner.hasNext()) {
+            tempScan = scanner.next();
+            tempNode = dict.find(tempScan);
+            val = tempNode.getValue();
+            if (val > maxVal) {
+                maxVal = val;
+                currBest = tempScan;
+            }
+        }
+        return currBest;
     }
 
     private String getCandidates(String word){
