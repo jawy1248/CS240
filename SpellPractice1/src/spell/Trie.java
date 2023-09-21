@@ -2,36 +2,32 @@ package spell;
 
 public class Trie implements ITrie {
 
-    INode root = new Node();
-    private int nodeCount = 1;
+    private Node root = new Node();
     private int wordCount = 0;
-
+    private int nodeCount = 1;
 
     @Override
     public void add(String word) {
         word = word.toLowerCase();
         INode temp = find(word);
-        if(temp == null){
-            char letter = word.charAt(0);
-            int ind = getIndex(letter);
-            temp = root.getChildren()[ind];
-            if(temp == null){
+        if(temp == null) {
+            int ind = getIndex(word, 0);
+            temp = stepDown(root, ind);
+            if (temp == null) {
                 root.getChildren()[ind] = new Node();
                 nodeCount++;
             }
             temp = root.getChildren()[ind];
             INode temp2;
             for(int i=1; i<word.length(); i++){
-                letter = word.charAt(i);
-                ind = getIndex(letter);
+                ind = getIndex(word, i);
                 temp2 = stepDown(temp, ind);
                 if(temp2 == null){
                     temp.getChildren()[ind] = new Node();
                     nodeCount++;
                     temp = temp.getChildren()[ind];
-                }else{
+                }else
                     temp = temp2;
-                }
             }
         }
         temp.incrementValue();
@@ -42,14 +38,12 @@ public class Trie implements ITrie {
     @Override
     public INode find(String word) {
         word = word.toLowerCase();
-        char letter = word.charAt(0);
-        int ind = getIndex(letter);
-        INode temp = root.getChildren()[ind];
-        for(int i=1; i<word.length(); i++) {
-            if (temp == null)
+        int ind = getIndex(word, 0);
+        INode temp = stepDown(root, ind);
+        for(int i=1; i<word.length(); i++){
+            if(temp == null)
                 return null;
-            letter = word.charAt(i);
-            ind = getIndex(letter);
+            ind = getIndex(word, i);
             temp = stepDown(temp, ind);
         }
         if(temp == null || temp.getValue() == 0)
@@ -57,14 +51,16 @@ public class Trie implements ITrie {
         return temp;
     }
 
-    private int getIndex(char letter){
-        return (letter - 'a');
+    private int getIndex(String word, int ind){
+        char letter = word.charAt(ind);
+        int charInd = (letter - 'a');
+        return charInd;
     }
 
-    private INode stepDown(INode n1, int ind){
-        if(n1 == null)
+    private INode stepDown(INode root, int ind){
+        if(root == null)
             return null;
-        return n1.getChildren()[ind];
+        return root.getChildren()[ind];
     }
 
     @Override
@@ -77,8 +73,40 @@ public class Trie implements ITrie {
         return nodeCount;
     }
 
-    @Override
-    public boolean equals(Object o) {
+    public int hashCode() {
+        int sumInd = 0;
+        for(int i=0; i<26; i++){
+            if(root.getChildren()[i] != null)
+                sumInd += i;
+        }
+        return (wordCount + 3*nodeCount + 5*sumInd);
+    }
+
+    public String toString() {
+        StringBuilder curr = new StringBuilder();
+        StringBuilder output = new StringBuilder();
+        strHelper(root, curr, output);
+        return output.toString();
+    }
+
+    private void strHelper(INode n1, StringBuilder curr, StringBuilder output){
+        if(n1.getValue() != 0){
+            output.append(curr);
+            output.append("\n");
+        }
+
+        for(int i=0; i<26; i++){
+            INode child = n1.getChildren()[i];
+            if(child != null) {
+                char letter = (char)(i + 'a');
+                curr.append(letter);
+                strHelper(child, curr, output);
+                curr.deleteCharAt(curr.length()-1);
+            }
+        }
+    }
+
+    public boolean equals(Object o){
         if(o == null || o.getClass() != this.getClass())
             return false;
         if(o == this)
@@ -86,6 +114,7 @@ public class Trie implements ITrie {
         Trie dict = (Trie)o;
         if(dict.getNodeCount() != this.getNodeCount() || dict.getWordCount() != this.getWordCount())
             return false;
+
         return eqHelper(this.root, dict.root);
     }
 
@@ -98,53 +127,20 @@ public class Trie implements ITrie {
             if(child1 == null){
                 if(child2 != null)
                     return false;
-            }else if(child2 == null){
+            }else if(child2 == null)
                 return false;
-            }
         }
 
-        boolean finalAns = true;
-        for(int i=0; i<26; i++){
+        boolean temp = true;
+        for(int i=0; i<26; i++) {
             INode child1 = n1.getChildren()[i];
             INode child2 = n2.getChildren()[i];
-            if(child1 != null)
-                finalAns = eqHelper(child1, child2);
-            if(!finalAns)
+            if (child1 != null)
+                temp = eqHelper(child1, child2);
+            if (!temp)
                 break;
         }
-        return finalAns;
-    }
 
-    public int hashCode(){
-        int indSum = 0;
-        for(int i=0; i<26; i++){
-            if(root.getChildren()[i] != null)
-                indSum += i;
-        }
-        return (nodeCount + 3*wordCount + 5*indSum);
-    }
-
-    public String toString(){
-        StringBuilder curr = new StringBuilder();
-        StringBuilder output = new StringBuilder();
-        stHelper(root, curr, output);
-        return output.toString();
-    }
-
-    private void stHelper(INode n1, StringBuilder curr, StringBuilder output){
-        if(n1.getValue() != 0){
-            output.append(curr);
-            output.append("\n");
-        }
-
-        for(int i=0; i<26; i++){
-            INode child = n1.getChildren()[i];
-            if(child != null){
-                char letter = (char)(i + 'a');
-                curr.append(letter);
-                stHelper(child, curr, output);
-                curr.deleteCharAt(curr.length()-1);
-            }
-        }
+        return temp;
     }
 }
