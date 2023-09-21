@@ -4,6 +4,5 @@ This semester we had to implement a spelling corrector. After we implemented it 
 There are 3 classes that need implemented. The notes for how I implimented each are below.
 - [Node Class](Media/node.jpg)
 - [Trie Class](Media/trie.jpg)
-- Spelling Corrector]
-	- [Page 1](Media/spell1.jpg)
-	- [Page 2](Media/spell2.jpg)
+- [Spelling Corrector](spell1.jpg)
+- [Spelling Corrector Cont.](spell2.jpg)
