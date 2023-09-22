@@ -4,7 +4,7 @@ public class Board implements ChessBoard{
 
     @Override
     public void addPiece(ChessPosition position, ChessPiece piece) {
-        
+
     }
 
     @Override
