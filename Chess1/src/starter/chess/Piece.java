@@ -4,14 +4,23 @@ import java.util.Collection;
 
 public class Piece implements ChessPiece {
 
+    // 0 is white, 1 is black
+    private ChessGame.TeamColor color;
+    private PieceType type;
+
+    public Piece(ChessGame.TeamColor color, PieceType piece){
+        this.color = color;
+        this.type = piece;
+    }
+
     @Override
     public ChessGame.TeamColor getTeamColor() {
-        return null;
+        return color;
     }
 
     @Override
     public PieceType getPieceType() {
-        return null;
+        return type;
     }
 
     @Override

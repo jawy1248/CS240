@@ -5,6 +5,10 @@ public class Position implements ChessPosition {
     private int row;
     private int col;
 
+    public Position(int row, int col){
+        this.row = row-1;
+        this.col = col-1;
+    }
 
     public void setPosition(int row, int col) {
         this.row = row;
