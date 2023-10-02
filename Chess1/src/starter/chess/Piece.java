@@ -1,7 +1,7 @@
 package chess;
 
 import java.util.Collection;
-import java.util.Set;
+import java.util.HashSet;
 
 public class Piece implements ChessPiece {
 
@@ -29,20 +29,39 @@ public class Piece implements ChessPiece {
         if(piece == null)
             return null;
 
-        Collection<ChessPosition> possMoves;
+        Collection<ChessMove> possMoves = new HashSet<>();
 
         int row = myPosition.getRow();
         int col = myPosition.getColumn();
 
-        PieceType tempType = piece.getPieceType();
-        ChessGame.TeamColor tempColor = piece.getTeamColor();
+        PieceType myType = piece.getPieceType();
+        ChessGame.TeamColor myColor = piece.getTeamColor();
 
-        switch (tempType) {
+        switch (myType) {
             case KING -> {
+                // Look at the 3x3 square around the king
                 for(int i=-1; i<2; i++){
-                    int tempRow = row+i;
-                    if(tempRow < 8 && tempRow > 0) {}
-//                        possMoves.add(new Position(tempRow, col));
+                    for(int j=-1; j<2; j++){
+                        int tempRow = row + i;
+                        int tempCol = col + j;
+                        ChessPosition tempPos = new Position(tempRow, tempCol);
+
+                        // if the position is on the board, check that position
+                        if (tempRow < 8 && tempRow >= 0 && tempCol < 8 && tempCol >= 0) {
+                            ChessPiece tempPiece = board.getPiece(tempPos);
+
+                            // if the square is null, it is a valid move
+                            if(tempPiece == null)
+                                possMoves.add(new Move(myPosition, tempPos, null));
+                            else {
+                                ChessGame.TeamColor tempColor = tempPiece.getTeamColor();
+
+                                // if the square is occupied by the same color, it is invalid
+                                if (myColor != tempColor)
+                                    possMoves.add(new Move(myPosition, tempPos, null));
+                            }
+                        }
+                    }
                 }
             }
             case QUEEN -> {
@@ -61,6 +80,6 @@ public class Piece implements ChessPiece {
 
             }
         }
-        return null;
+        return possMoves;
     }
 }
