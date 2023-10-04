@@ -3,9 +3,7 @@ package chess;
 public class Board implements ChessBoard{
 
     // Always use [row][col]
-    private ChessPiece[][] board = new ChessPiece[8][8];
-
-    public Board(){ resetBoard(); }
+    private ChessPiece[][] board = new ChessPiece[9][9];
 
     @Override
     public void addPiece(ChessPosition position, ChessPiece piece) {
@@ -33,34 +31,34 @@ public class Board implements ChessBoard{
 
         // Set up White
         // Set up the first row
-        board[0][0] = new Piece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK);
-        board[0][1] = new Piece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT);
-        board[0][2] = new Piece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.BISHOP);
-        board[0][3] = new Piece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.QUEEN);
-        board[0][4] = new Piece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KING);
-        board[0][5] = new Piece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.BISHOP);
-        board[0][6] = new Piece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT);
-        board[0][7] = new Piece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK);
+        board[1][1] = new Piece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK);
+        board[1][2] = new Piece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT);
+        board[1][3] = new Piece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.BISHOP);
+        board[1][4] = new Piece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.QUEEN);
+        board[1][5] = new Piece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KING);
+        board[1][6] = new Piece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.BISHOP);
+        board[1][7] = new Piece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT);
+        board[1][8] = new Piece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK);
 
         // Set up the pawns
-        for(int i=0; i<8; i++) {
-            board[1][i] = new Piece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
+        for(int i=1; i<9; i++) {
+            board[2][i] = new Piece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
         }
 
         // Set up Black
         // Set up the last row
-        board[7][0] = new Piece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK);
-        board[7][1] = new Piece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KNIGHT);
-        board[7][2] = new Piece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP);
-        board[7][3] = new Piece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.QUEEN);
-        board[7][4] = new Piece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KING);
-        board[7][5] = new Piece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP);
-        board[7][6] = new Piece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KNIGHT);
-        board[7][7] = new Piece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK);
+        board[8][1] = new Piece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK);
+        board[8][2] = new Piece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KNIGHT);
+        board[8][3] = new Piece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP);
+        board[8][4] = new Piece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.QUEEN);
+        board[8][5] = new Piece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KING);
+        board[8][6] = new Piece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP);
+        board[8][7] = new Piece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KNIGHT);
+        board[8][8] = new Piece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK);
 
         // Set up the pawns
-        for(int i=0; i<8; i++) {
-            board[6][i] = new Piece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN);
+        for(int i=1; i<9; i++) {
+            board[7][i] = new Piece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN);
         }
     }
 }

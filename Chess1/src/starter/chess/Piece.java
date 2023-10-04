@@ -1,7 +1,9 @@
 package chess;
 
 import java.util.Collection;
+
 import java.util.HashSet;
+import java.util.Set;
 
 public class Piece implements ChessPiece {
 
@@ -39,7 +41,7 @@ public class Piece implements ChessPiece {
 
         switch (myType) {
             case KING -> {
-                System.out.println("myPos: (" + row + ", " + col + ")");
+
                 // Look at the 3x3 square around the king
                 for(int i=-1; i<2; i++){
                     for(int j=-1; j<2; j++){
@@ -47,25 +49,17 @@ public class Piece implements ChessPiece {
                         int tempCol = col + j;
                         ChessPosition tempPos = new Position(tempRow, tempCol);
 
-                        System.out.println("tempPos: (" + tempRow + ", " + tempCol + ")");
-
                         // if the position is on the board, check that position
-                        if (tempRow < 8 && tempRow >= 0 && tempCol < 8 && tempCol >= 0) {
-                            ChessPiece tempPiece = board.getPiece(tempPos);
+                        if (tempRow < 9 && tempRow > 0 && tempCol < 9 && tempCol > 0) {
 
                             // if the square is null, it is a valid move
-                            if(tempPiece == null) {
+                            if(board.getPiece(tempPos) == null)
                                 possMoves.add(new Move(myPosition, tempPos, null));
-                                System.out.println("Added Position (null): (" + tempRow + ", " + tempCol + ")");
-                            }
                             else {
-                                ChessGame.TeamColor tempColor = tempPiece.getTeamColor();
 
                                 // if the square is occupied by the same color, it is invalid
-                                if (myColor != tempColor) {
+                                if (myColor != board.getPiece(tempPos).getTeamColor())
                                     possMoves.add(new Move(myPosition, tempPos, null));
-                                    System.out.println("Added Position (color): (" + tempRow + ", " + tempCol + ")");
-                                }
                             }
                         }
                     }
