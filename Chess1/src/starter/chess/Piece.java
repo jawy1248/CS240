@@ -67,16 +67,99 @@ public class Piece implements ChessPiece {
                 }
             }
             case QUEEN -> {
-
+                checkCross(board, possMoves, myPosition);
+                checkDiag(board, possMoves, myPosition);
             }
             case ROOK -> {
-
+                checkCross(board, possMoves, myPosition);
             }
             case KNIGHT -> {
+                // Create variables
+                int tempRow;
+                int tempCol;
+                ChessPosition tempPos;
+                ChessPiece tempPiece;
+
+                // Look at each of the moves
+                // Up
+                tempRow = row+2;
+
+                tempCol = col-1;
+                if(tempRow > 0 && tempRow < 9 && tempCol > 0 && tempCol < 9) {
+                    tempPos = new Position(tempRow, tempCol);
+                    tempPiece = board.getPiece(tempPos);
+                    if (tempPiece == null || tempPiece.getTeamColor() != myColor)
+                        possMoves.add(new Move(myPosition, tempPos, null));
+                }
+
+                tempCol = col+1;
+                if(tempRow > 0 && tempRow < 9 && tempCol > 0 && tempCol < 9) {
+                    tempPos = new Position(tempRow, tempCol);
+                    tempPiece = board.getPiece(tempPos);
+                    if (tempPiece == null || tempPiece.getTeamColor() != myColor)
+                        possMoves.add(new Move(myPosition, tempPos, null));
+                }
+
+                // Right
+                tempCol = col+2;
+
+                tempRow = row-1;
+                if(tempRow > 0 && tempRow < 9 && tempCol > 0 && tempCol < 9) {
+                    tempPos = new Position(tempRow, tempCol);
+                    tempPiece = board.getPiece(tempPos);
+                    if (tempPiece == null || tempPiece.getTeamColor() != myColor)
+                        possMoves.add(new Move(myPosition, tempPos, null));
+                }
+
+                tempRow = row+1;
+                if(tempRow > 0 && tempRow < 9 && tempCol > 0 && tempCol < 9) {
+                    tempPos = new Position(tempRow, tempCol);
+                    tempPiece = board.getPiece(tempPos);
+                    if (tempPiece == null || tempPiece.getTeamColor() != myColor)
+                        possMoves.add(new Move(myPosition, tempPos, null));
+                }
+
+                // Down
+                tempRow = row-2;
+
+                tempCol = col-1;
+                if(tempRow > 0 && tempRow < 9 && tempCol > 0 && tempCol < 9) {
+                    tempPos = new Position(tempRow, tempCol);
+                    tempPiece = board.getPiece(tempPos);
+                    if (tempPiece == null || tempPiece.getTeamColor() != myColor)
+                        possMoves.add(new Move(myPosition, tempPos, null));
+                }
+
+                tempCol = col+1;
+                if(tempRow > 0 && tempRow < 9 && tempCol > 0 && tempCol < 9) {
+                    tempPos = new Position(tempRow, tempCol);
+                    tempPiece = board.getPiece(tempPos);
+                    if (tempPiece == null || tempPiece.getTeamColor() != myColor)
+                        possMoves.add(new Move(myPosition, tempPos, null));
+                }
+
+                // Left
+                tempCol = col-2;
+
+                tempRow = row-1;
+                if(tempRow > 0 && tempRow < 9 && tempCol > 0 && tempCol < 9) {
+                    tempPos = new Position(tempRow, tempCol);
+                    tempPiece = board.getPiece(tempPos);
+                    if (tempPiece == null || tempPiece.getTeamColor() != myColor)
+                        possMoves.add(new Move(myPosition, tempPos, null));
+                }
+
+                tempRow = row + 1;
+                if(tempRow > 0 && tempRow < 9 && tempCol > 0 && tempCol < 9) {
+                    tempPos = new Position(tempRow, tempCol);
+                    tempPiece = board.getPiece(tempPos);
+                    if (tempPiece == null || tempPiece.getTeamColor() != myColor)
+                        possMoves.add(new Move(myPosition, tempPos, null));
+                }
 
             }
             case BISHOP -> {
-
+                checkDiag(board, possMoves, myPosition);
             }
             case PAWN -> {
                 // Create variables
@@ -215,6 +298,57 @@ public class Piece implements ChessPiece {
             // If there is not a piece, add to possMoves and check next row
             if(tempPiece == null)
                 possMoves.add(new Move(myPosition, tempPos, null));
+
+            // Otherwise, check if piece is same color and then break...if it is not same color, add to possMoves
+            else{
+                if(myColor != tempPiece.getTeamColor())
+                    possMoves.add(new Move(myPosition, tempPos, null));
+                break;
+            }
+        }
+
+        // Check down
+        for(int i=1; i<8; i++){
+            // Step through the rows
+            tempRow = row-i;
+
+            // If you get off the board, break
+            if(tempRow < 1)
+                break;
+
+            // If on the board, check tempPos for a piece
+            tempPos = new Position(tempRow, col);
+            tempPiece = board.getPiece(tempPos);
+
+            // If there is not a piece, add to possMoves and check next row
+            if(tempPiece == null)
+                possMoves.add(new Move(myPosition, tempPos, null));
+
+            // Otherwise, check if piece is same color and then break...if it is not same color, add to possMoves
+            else{
+                if(myColor != tempPiece.getTeamColor())
+                    possMoves.add(new Move(myPosition, tempPos, null));
+                break;
+            }
+        }
+
+        // Check left
+        for(int i=1; i<8; i++){
+            // Step through the rows
+            tempCol = col-i;
+
+            // If you get off the board, break
+            if(tempCol < 1)
+                break;
+
+            // If on the board, check tempPos for a piece
+            tempPos = new Position(row, tempCol);
+            tempPiece = board.getPiece(tempPos);
+
+            // If there is not a piece, add to possMoves and check next row
+            if(tempPiece == null)
+                possMoves.add(new Move(myPosition, tempPos, null));
+
             // Otherwise, check if piece is same color and then break...if it is not same color, add to possMoves
             else{
                 if(myColor != tempPiece.getTeamColor())
@@ -224,12 +358,31 @@ public class Piece implements ChessPiece {
             }
         }
 
-        // Check down
-
-        // Check left
-
         // Check right
+        for(int i=1; i<8; i++){
+            // Step through the rows
+            tempCol = col+i;
 
+            // If you get off the board, break
+            if(tempCol > 8)
+                break;
+
+            // If on the board, check tempPos for a piece
+            tempPos = new Position(row, tempCol);
+            tempPiece = board.getPiece(tempPos);
+
+            // If there is not a piece, add to possMoves and check next row
+            if(tempPiece == null)
+                possMoves.add(new Move(myPosition, tempPos, null));
+
+                // Otherwise, check if piece is same color and then break...if it is not same color, add to possMoves
+            else{
+                if(myColor != tempPiece.getTeamColor())
+                    possMoves.add(new Move(myPosition, tempPos, null));
+
+                break;
+            }
+        }
     }
 
     private void checkDiag(ChessBoard board, Collection<ChessMove> possMoves, ChessPosition myPosition){
@@ -239,14 +392,121 @@ public class Piece implements ChessPiece {
 
         int tempRow;
         int tempCol;
-
-        // Check up left
+        ChessPosition tempPos;
+        ChessPiece tempPiece;
 
         // Check up right
+        for(int i=1; i<8; i++){
+            // Step through the diag
+            tempRow = row+i;
+            tempCol = col+i;
+
+            // If you get off the board, break
+            if(tempRow > 8 || tempCol > 8)
+                break;
+
+            // If on the board, check tempPos for a piece
+            tempPos = new Position(tempRow, tempCol);
+            tempPiece = board.getPiece(tempPos);
+
+            // If there is not a piece, add to possMoves and check next row
+            if(tempPiece == null)
+                possMoves.add(new Move(myPosition, tempPos, null));
+
+            // Otherwise, check if piece is same color and then break...if it is not same color, add to possMoves
+            else{
+                if(myColor != tempPiece.getTeamColor())
+                    possMoves.add(new Move(myPosition, tempPos, null));
+                break;
+            }
+        }
+
+        // Check up left
+        for(int i=1; i<8; i++){
+            // Step through the diag
+            tempRow = row+i;
+            tempCol = col-i;
+
+            // If you get off the board, break
+            if(tempRow > 8 || tempCol < 1)
+                break;
+
+            // If on the board, check tempPos for a piece
+            tempPos = new Position(tempRow, tempCol);
+            tempPiece = board.getPiece(tempPos);
+
+            // If there is not a piece, add to possMoves and check next row
+            if(tempPiece == null)
+                possMoves.add(new Move(myPosition, tempPos, null));
+
+            // Otherwise, check if piece is same color and then break...if it is not same color, add to possMoves
+            else{
+                if(myColor != tempPiece.getTeamColor())
+                    possMoves.add(new Move(myPosition, tempPos, null));
+                break;
+            }
+        }
 
         // Check down left
+        for(int i=1; i<8; i++){
+            // Step through the diag
+            tempRow = row-i;
+            tempCol = col-i;
+
+            // If you get off the board, break
+            if(tempRow < 1 || tempCol < 1)
+                break;
+
+            // If on the board, check tempPos for a piece
+            tempPos = new Position(tempRow, tempCol);
+            tempPiece = board.getPiece(tempPos);
+
+            // If there is not a piece, add to possMoves and check next row
+            if(tempPiece == null)
+                possMoves.add(new Move(myPosition, tempPos, null));
+
+            // Otherwise, check if piece is same color and then break...if it is not same color, add to possMoves
+            else{
+                if(myColor != tempPiece.getTeamColor())
+                    possMoves.add(new Move(myPosition, tempPos, null));
+                break;
+            }
+        }
 
         // Check down right
+        for(int i=1; i<8; i++){
+            // Step through the diag
+            tempRow = row-i;
+            tempCol = col+i;
 
+            // If you get off the board, break
+            if(tempRow < 1 || tempCol > 8)
+                break;
+
+            // If on the board, check tempPos for a piece
+            tempPos = new Position(tempRow, tempCol);
+            tempPiece = board.getPiece(tempPos);
+
+            // If there is not a piece, add to possMoves and check next row
+            if(tempPiece == null)
+                possMoves.add(new Move(myPosition, tempPos, null));
+
+            // Otherwise, check if piece is same color and then break...if it is not same color, add to possMoves
+            else{
+                if(myColor != tempPiece.getTeamColor())
+                    possMoves.add(new Move(myPosition, tempPos, null));
+                break;
+            }
+        }
+    }
+
+    @Override
+    public String toString(){
+        StringBuilder finalString = new StringBuilder();
+        finalString.append(color);
+        finalString.append(" ");
+        finalString.append(type);
+
+        return finalString.toString();
     }
 }

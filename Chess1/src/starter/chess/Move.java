@@ -22,6 +22,7 @@ public class Move implements ChessMove {
 
     @Override
     public ChessPosition getEndPosition() {
+//        System.out.println(endPos);
         return endPos;
     }
 
@@ -41,5 +42,14 @@ public class Move implements ChessMove {
     @Override
     public int hashCode() {
         return Objects.hash(initPos, endPos, promo);
+    }
+
+    @Override
+    public String toString(){
+        StringBuilder finalString = new StringBuilder();
+        finalString.append(initPos);
+        finalString.append(" to ");
+        finalString.append(endPos);
+        return finalString.toString();
     }
 }

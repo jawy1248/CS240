@@ -30,4 +30,16 @@ public class Position implements ChessPosition {
     public int hashCode() {
         return Objects.hash(row, col);
     }
+
+    @Override
+    public String toString(){
+        StringBuilder finalString = new StringBuilder();
+        finalString.append("(");
+        finalString.append(row);
+        finalString.append(", ");
+        finalString.append(col);
+        finalString.append(")");
+
+        return finalString.toString();
+    }
 }
