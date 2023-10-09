@@ -13,11 +13,14 @@ public class Board implements ChessBoard{
         board[row][col] = piece;
     }
 
-    public void removePiece(ChessPosition position){
+    public ChessPiece removePiece(ChessPosition position){
         int row = position.getRow();
         int col = position.getColumn();
+        ChessPiece remPiece = getPiece(position);
 
         board[row][col] = null;
+
+        return remPiece;
     }
 
     @Override

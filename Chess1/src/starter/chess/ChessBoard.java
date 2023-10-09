@@ -31,5 +31,5 @@ public interface ChessBoard {
      */
     void resetBoard();
 
-    void removePiece(ChessPosition position);
+    ChessPiece removePiece(ChessPosition position);
 }
