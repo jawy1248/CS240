@@ -1,4 +1,4 @@
 package response;
 
-public class Failure_Resp {
+public class Failure_Resp implements Response{
 }

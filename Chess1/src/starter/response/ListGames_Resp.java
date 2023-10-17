@@ -1,4 +1,4 @@
 package response;
 
-public class ListGames_Resp {
+public class ListGames_Resp implements Response{
 }
