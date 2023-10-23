@@ -1,6 +1,6 @@
 package dataAccess;
 
-import java.util.Map;
+import java.util.HashMap;
 
 /**
  * Is a database for all the user authentication tokens.
@@ -9,7 +9,7 @@ public class Auth_DAO {
     /**
      * Private variable that links each authToken to each username
      */
-    private Map<String, String> Auth;
+    private HashMap<String, String> Auth;
 
     /**
      * Adds a user to the database
@@ -18,18 +18,29 @@ public class Auth_DAO {
      * @throws DataAccessException  the error thrown if a user is in the database, or information is invalid
      */
     public void addAuth(Auth_Record user) throws DataAccessException {
+        if(Auth.containsKey(user.username()))
+            throw new DataAccessException("User already exists");
+
+        Auth.put(user.username(), user.authToken());
     }
 
     /**
      * Removes a user from the database
      *
-     * @param user                  the users information to be removed
+     * @param userName              Username of the user to be removed
      * @throws DataAccessException  the error thrown if a user is in the database, or information is invalid
      */
-    public void removeAuth(Auth_Record user) throws DataAccessException {
+    public void removeAuth(String userName) throws DataAccessException {
+        if(Auth.containsKey(userName))
+            throw new DataAccessException("User does not exists");
+
+        Auth.remove(userName);
     }
 
-    public Map<String, String> getAuth(Auth_Record user) throws DataAccessException {
-        return null;
+    public Auth_Record getAuthData(String userName) throws DataAccessException {
+        if(Auth.containsKey(userName))
+            throw new DataAccessException("User does not exists");
+
+        return new Auth_Record(userName, Auth.get(userName));
     }
 }
