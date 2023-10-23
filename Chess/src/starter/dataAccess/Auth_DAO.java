@@ -17,7 +17,7 @@ public class Auth_DAO {
      * @param user                  the users information to be added
      * @throws DataAccessException  the error thrown if a user is in the database, or information is invalid
      */
-    public void addAuth(Auth_Model user) throws DataAccessException {
+    public void addAuth(Auth_Record user) throws DataAccessException {
     }
 
     /**
@@ -26,10 +26,10 @@ public class Auth_DAO {
      * @param user                  the users information to be removed
      * @throws DataAccessException  the error thrown if a user is in the database, or information is invalid
      */
-    public void removeAuth(Auth_Model user) throws DataAccessException {
+    public void removeAuth(Auth_Record user) throws DataAccessException {
     }
 
-    public Map<String, String> getAuth(Auth_Model user) throws DataAccessException {
+    public Map<String, String> getAuth(Auth_Record user) throws DataAccessException {
         return null;
     }
 }

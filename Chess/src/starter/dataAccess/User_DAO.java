@@ -18,7 +18,7 @@ public class User_DAO {
      * @param user                      user to be added
      * @throws DataAccessException      if the user info is invalid or already exists
      */
-    public void addUser(User_Model user) throws DataAccessException{
+    public void addUser(User_Record user) throws DataAccessException{
     }
 
     /**
@@ -27,10 +27,10 @@ public class User_DAO {
      * @param user                      user to be removed
      * @throws DataAccessException      if the user info is invalid or already exists
      */
-    public void removeUser(User_Model user) throws DataAccessException {
+    public void removeUser(User_Record user) throws DataAccessException {
     }
 
-    public ArrayList<String> getUserDAO(User_Model user) throws DataAccessException{
+    public ArrayList<String> getUserDAO(User_Record user) throws DataAccessException{
         return null;
     }
 }

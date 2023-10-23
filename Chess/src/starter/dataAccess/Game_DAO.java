@@ -19,7 +19,7 @@ public class Game_DAO {
      * @param game                  the Game_Model object that hold all the info
      * @throws DataAccessException  for invalid addition of game
      */
-    public void addGame(Game_Model game) throws DataAccessException{
+    public void addGame(Game_Record game) throws DataAccessException{
     }
 
     /**
@@ -28,10 +28,10 @@ public class Game_DAO {
      * @param game                  game object to be removed
      * @throws DataAccessException  if the object does not exist
      */
-    public void removeGame(Game_Model game) throws DataAccessException{
+    public void removeGame(Game_Record game) throws DataAccessException{
     }
 
-    public Map<String, Object[]> getGameDAO(Game_Model game){
+    public Map<String, Object[]> getGameDAO(Game_Record game){
         return null;
     }
 }
