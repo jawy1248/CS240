@@ -53,6 +53,16 @@ public class Game_DAO {
         gameObjects.remove(gameID);
     }
 
+    /**
+     * Completely removes all Games
+     */
+    public void clearAllGames(){
+        whiteUsernames.clear();
+        blackUsernames.clear();
+        gameNames.clear();
+        gameObjects.clear();
+    }
+
     public Game_Record getGameData(int gameID) throws DataAccessException{
         if(!whiteUsernames.containsKey(gameID))
             throw new DataAccessException("Game does not exist");

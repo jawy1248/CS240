@@ -37,6 +37,13 @@ public class Auth_DAO {
         Auth.remove(userName);
     }
 
+    /**
+     * Completely removes all Auth tokens
+     */
+    public void clearAllAuth(){
+        Auth.clear();
+    }
+
     public Auth_Record getAuthData(String userName) throws DataAccessException {
         if(Auth.containsKey(userName))
             throw new DataAccessException("User does not exists");

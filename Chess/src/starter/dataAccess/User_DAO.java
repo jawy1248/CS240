@@ -41,6 +41,14 @@ public class User_DAO {
         emails.remove(userName);
     }
 
+    /**
+     * Completely removes all Users
+     */
+    public void clearAllUsers(){
+        passwords.clear();
+        emails.clear();
+    }
+
     public User_Record getUserData(String userName) throws DataAccessException {
         if(!passwords.containsKey(userName))
             throw new DataAccessException("User does not exist");
