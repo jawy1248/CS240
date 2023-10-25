@@ -15,6 +15,7 @@ public class JoinGame {
      * @return              Always returns null, no message
      */
     public Response joinGame(JoinGame_Req joinGameReq){
+
         return null;
     }
 }
