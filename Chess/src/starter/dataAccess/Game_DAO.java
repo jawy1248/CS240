@@ -12,10 +12,10 @@ public class Game_DAO {
      * Private variables include the whiteUsername, blackUsername,
      * gameName, and game object where gameID is the unique ID
      */
-    private HashMap<Integer, String> whiteUsernames = new HashMap<Integer, String>();
-    private HashMap<Integer, String> blackUsernames = new HashMap<Integer, String>();
-    private HashMap<Integer, String> gameNames = new HashMap<Integer, String>();
-    private HashMap<Integer, ChessGame> gameObjects = new HashMap<Integer, ChessGame>();
+    private static HashMap<Integer, String> whiteUsernames = new HashMap<Integer, String>();
+    private static HashMap<Integer, String> blackUsernames = new HashMap<Integer, String>();
+    private static HashMap<Integer, String> gameNames = new HashMap<Integer, String>();
+    private static HashMap<Integer, ChessGame> gameObjects = new HashMap<Integer, ChessGame>();
 
     /**
      * adds a single Game_Record object to the list of all games

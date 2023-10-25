@@ -18,6 +18,4 @@ public class Failure_Resp implements Response{
     public Failure_Resp(String message){
         this.message = message;
     }
-
-
 }

@@ -9,7 +9,7 @@ public class Auth_DAO {
     /**
      * Private variable that links each authToken to each username
      */
-    private HashMap<String, String> Auth;
+    private static HashMap<String, String> Auth;
 
     /**
      * Adds a user to the database

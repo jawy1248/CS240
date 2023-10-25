@@ -30,7 +30,7 @@ public class JoinGame_Req {
         return playerColor;
     }
 
-    public int getGameID(){
+    public int getGameId(){
         return gameID;
     }
 }
