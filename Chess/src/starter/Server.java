@@ -10,7 +10,7 @@ public class Server {
             Spark.externalStaticFileLocation("web/");
 
             // each of the methods
-//            Spark.delete("/db", (request, response) -> ClearApplicationHand.handle(request, response));
+            Spark.delete("/db", (request, response) -> ClearApplicationHand.handle(request, response));
             Spark.post("/user", (request, response) -> RegisterHand.handle(request, response));
 //            Spark.post("/session", (request, response) -> LoginHand.handle(request, response));
 //            Spark.delete("/session", (request, response) -> LogoutHand.handle(request, response));

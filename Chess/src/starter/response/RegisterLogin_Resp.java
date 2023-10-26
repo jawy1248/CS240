@@ -9,15 +9,41 @@ public class RegisterLogin_Resp implements Response{
      */
     private String username;
     private String authToken;
+    private int code;
+    private String message;
+    private boolean success;
 
-    /**
-     * Constructor - sets the username and authToken
-     *
-     * @param username  the username of the user playing
-     * @param authToken the authToken of the user playing
-     */
-    public RegisterLogin_Resp(String username, String authToken){
+    // ----- Setters -----
+    public void setUsername(String username) {
         this.username = username;
+    }
+    public void setAuthToken(String authToken) {
         this.authToken = authToken;
+    }
+    public void setCode(int code) {
+        this.code = code;
+    }
+    public void setMessage(String message) {
+        this.message = message;
+    }
+    public void setSuccess(boolean success) {
+        this.success = success;
+    }
+
+    // ----- Getters -----
+    public String getUsername() {
+        return this.username;
+    }
+    public String getAuthToken() {
+        return this.authToken;
+    }
+    public int getCode() {
+        return this.code;
+    }
+    public String getMessage() {
+        return this.message;
+    }
+    public boolean getSuccess() {
+        return this.success;
     }
 }

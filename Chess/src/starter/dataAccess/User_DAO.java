@@ -20,9 +20,6 @@ public class User_DAO {
      * @throws DataAccessException      if the user info is invalid or already exists
      */
     public void addUser(User_Record user) throws DataAccessException{
-        if(passwords.containsKey(user.username()))
-            throw new DataAccessException("User already exists");
-
         passwords.put(user.username(), user.password());
         emails.put(user.username(), user.email());
     }
@@ -33,10 +30,7 @@ public class User_DAO {
      * @param userName                  username of the user to be removed
      * @throws DataAccessException      if the user info is invalid or already exists
      */
-    public void removeUser(String userName) throws DataAccessException {
-        if(!passwords.containsKey(userName))
-            throw new DataAccessException("User does not exist");
-
+    public void removeUser(String userName) throws DataAccessException{
         passwords.remove(userName);
         emails.remove(userName);
     }
@@ -49,9 +43,9 @@ public class User_DAO {
         emails.clear();
     }
 
-    public User_Record getUserData(String userName) throws DataAccessException {
+    public User_Record getUserData(String userName){
         if(!passwords.containsKey(userName))
-            throw new DataAccessException("User does not exist");
+            return null;
 
         return new User_Record(userName, passwords.get(userName), emails.get(userName));
     }

@@ -1,7 +1,6 @@
 package service;
 
 import dataAccess.*;
-import request.*;
 import response.*;
 
 /**
@@ -13,7 +12,9 @@ public class ClearApplication {
      *
      * @return  has no return. Always returns null
      */
-    public Response clearApp(){
-        return null;
+    public Response clearApp(Database db){
+        db.clearAll();
+
+        return new Success_Resp();
     }
 }

@@ -14,7 +14,7 @@ public class RegisterHand {
         Gson gson = new Gson();
         String temp = request.body();
         Register_Req requested = gson.fromJson(temp, Register_Req.class);
-        User_DAO db = new User_DAO();
+        Database db = new Database();
         Register service = new Register();
         Response resp = service.register(requested, db);
         temp = gson.toJson(resp);

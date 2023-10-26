@@ -9,13 +9,21 @@ public class CreateGame_Resp implements Response{
      * the id of the game
      */
     private int gameID;
+    private int code;
+    private String message;
+    private boolean success;
 
-    /**
-     * Constructor - sets the gameID variable
-     *
-     * @param gameID    is the id for the game being played
-     */
-    public CreateGame_Resp(int gameID){
-        this.gameID = gameID;
-    }
+    // Setters
+    public void setGameID(int gameID){ this.gameID = gameID; }
+    public void setCode(int code) { this.code = code; }
+    public void setMessage(String message) { this.message = message; }
+    public void setSuccess(boolean success) { this.success = success; }
+
+    // Getters
+    public int getGameID(){ return this.gameID; }
+    public int getCode() { return this.code; }
+    public String getMessage() { return this.message; }
+    public boolean getSuccess() { return this.success; }
+
+
 }
