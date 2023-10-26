@@ -4,7 +4,7 @@ package request;
  * Is a request to create a new account. This request includes
  * the username, password, and email of the user signing up
  */
-public class Register_Req {
+public class Register_Req implements Request{
     /**
      * Private variables for this class includes the username,
      * password, and email associated with the account being created

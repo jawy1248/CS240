@@ -13,15 +13,22 @@ public class Register {
     /**
      * Creates and saves a user into the database
      *
-     * @param registerReq   Request information for the user to create a profile
+     * @param requested   Request information for the user to create a profile
      * @return              User information if success, error message otherwise
      */
-    public Response register(Register_Req registerReq){
+    public Response register(Register_Req requested, User_DAO db){
+        String user = requested.getUsername();
+        String pass = requested.getPassword();
+        String email = requested.getEmail();
+        User_Record userRecord = new User_Record(user, pass, email);
 
-        // Make register request in Json
-        String reqData = new Gson().toJson(registerReq);
+        try{
+            db.addUser(userRecord);
+        }catch(DataAccessException e){
+//            return e;
+        }
 
-        Spark.post("/user", (request, response) -> "Hello");
+
         return null;
     }
 }
