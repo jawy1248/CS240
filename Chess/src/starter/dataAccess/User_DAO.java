@@ -3,20 +3,30 @@ package dataAccess;
 import java.util.HashMap;
 
 /**
- * The database for storing all the users' information. Stores all data
+ * Database that holds all users
  */
 public class User_DAO {
     /**
-     * Private variables include the passwords and emails of the users
-     * where the username is the unique ID used to identify
+     * Private variables include passwords and emails where usernames is the unique ID
      */
     private HashMap<String, String> passwords = new HashMap<String, String>();
     private HashMap<String, String> emails = new HashMap<String, String>();
 
     /**
-     * adds a user to the database
-     *
-     * @param user                      user data to be added
+     * Finds a User in the userDB. Returns the whole record of the user
+     * @param username String of the username to look for
+     * @return User_Record object of the found user (or null if none are found)
+     */
+    public User_Record getUserData(String username){
+        if(!passwords.containsKey(username))
+            return null;
+
+        return new User_Record(username, passwords.get(username), emails.get(username));
+    }
+
+    /**
+     * Adds a user to the userDB
+     * @param user User_Record object to be added to the DB
      */
     public void addUser(User_Record user){
         passwords.put(user.username(), user.password());
@@ -24,28 +34,10 @@ public class User_DAO {
     }
 
     /**
-     * removes a user from the database
-     *
-     * @param userName                  username of the user to be removed
-     * @throws DataAccessException      if the user info is invalid or already exists
-     */
-    public void removeUser(String userName) throws DataAccessException{
-        passwords.remove(userName);
-        emails.remove(userName);
-    }
-
-    /**
-     * Completely removes all Users
+     * Completely clears all the users from the database
      */
     public void clearAllUsers(){
         passwords.clear();
         emails.clear();
-    }
-
-    public User_Record getUserData(String userName){
-        if(!passwords.containsKey(userName))
-            return null;
-
-        return new User_Record(userName, passwords.get(userName), emails.get(userName));
     }
 }

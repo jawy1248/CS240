@@ -128,10 +128,9 @@ public class Database {
             String tempWhite = gameDB.getWhiteUsername(temp);
             String tempBlack = gameDB.getBlackUsername(temp);
             String tempName = gameDB.getGameName(temp);
-            ChessGame tempGame = null;
 
             // Create and add temp Game_Record
-            Game_Record tempRecord = new Game_Record(temp, tempWhite, tempBlack, tempName, tempGame);
+            Game_Record tempRecord = new Game_Record(temp, tempWhite, tempBlack, tempName, null);
             listOfGames.add(tempRecord);
         }
         // Return the list
