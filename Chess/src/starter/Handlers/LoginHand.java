@@ -18,8 +18,8 @@ public class LoginHand {
 
         Login service = new Login();
         Response resp = service.login(requested, db);
-        temp = gson.toJson(resp);
+        response.status(resp.getCode());
 
-        return temp;
+        return gson.toJson(resp);
     }
 }

@@ -16,6 +16,7 @@ public class LogoutHand {
 
         Logout service = new Logout();
         Response resp = service.logout(authToken, db);
+        response.status(resp.getCode());
 
         return gson.toJson(resp);
     }

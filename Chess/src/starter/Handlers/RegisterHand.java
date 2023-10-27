@@ -2,7 +2,7 @@ package Handlers;
 
 import com.google.gson.Gson;
 import request.Register_Req;
-import response.*;
+import response.Response;
 import service.Register;
 import dataAccess.*;
 
@@ -18,8 +18,8 @@ public class RegisterHand {
 
         Register service = new Register();
         Response resp = service.register(requested, db);
-        temp = gson.toJson(resp);
+        response.status(resp.getCode());
 
-        return temp;
+        return gson.toJson(resp);
     }
 }

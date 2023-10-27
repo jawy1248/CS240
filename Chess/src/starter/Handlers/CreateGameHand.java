@@ -20,6 +20,7 @@ public class CreateGameHand {
 
         CreateGame service = new CreateGame();
         Response resp = service.createGame(gameName, db);
+        response.status(resp.getCode());
 
         return gson.toJson(resp);
     }

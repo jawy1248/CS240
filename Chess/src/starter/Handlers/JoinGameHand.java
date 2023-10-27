@@ -20,6 +20,7 @@ public class JoinGameHand {
 
         JoinGame service = new JoinGame();
         Response resp = service.joinGame(join, db);
+        response.status(resp.getCode());
 
         return gson.toJson(resp);
     }

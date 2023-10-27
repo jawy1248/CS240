@@ -16,6 +16,7 @@ public class ListGamesHand {
 
         ListGames service = new ListGames();
         Response resp = service.listGames(authToken, db);
+        response.status(resp.getCode());
 
         return gson.toJson(resp);
     }
