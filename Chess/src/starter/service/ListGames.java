@@ -15,6 +15,7 @@ public class ListGames {
      */
     public Response listGames(String authToken, Database db) {
         ListGames_Resp response = new ListGames_Resp();
+        response.setSuccess(false);
 
         // If any fields are null, it is a bad request
         if (authToken == null) {

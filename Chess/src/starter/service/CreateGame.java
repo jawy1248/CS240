@@ -18,6 +18,7 @@ public class CreateGame {
      */
     public Response createGame(CreateGame_Req request, Database db){
         CreateGame_Resp response = new CreateGame_Resp();
+        response.setSuccess(false);
         String gameName = request.getGameName();
         String authToken = request.getAuthToken();
 

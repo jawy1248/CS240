@@ -6,16 +6,7 @@ import dataAccess.*;
 import request.*;
 import response.*;
 
-/**
- * Joins a game if given valid information and game is not full
- */
 public class JoinGame {
-    /**
-     * Attempts to join a game
-     *
-     * @param request   Object that hsa information to request to join game
-     * @return          Always returns null, no message
-     */
     public Response joinGame(JoinGame_Req request, Database db){
         Failure_Resp responseBad = new Failure_Resp();
         Success_Resp response = new Success_Resp();

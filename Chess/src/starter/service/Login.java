@@ -16,6 +16,7 @@ public class Login {
      */
     public Response login(Login_Req request, Database db){
         RegisterLogin_Resp response = new RegisterLogin_Resp();
+        response.setSuccess(false);
 
         // If any of the fields are null, it is a bad request
         if(request.getUsername() == null | request.getPassword() == null){
