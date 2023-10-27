@@ -16,35 +16,37 @@ public class Register {
      * @return          User information if success, error message otherwise
      */
     public Response register(Register_Req request, Database db){
-        User_DAO userDB = new User_DAO();
-        Auth_DAO authDB = new Auth_DAO();
         RegisterLogin_Resp response = new RegisterLogin_Resp();
 
+        // If any of the fields are null, it is a bad request
         if(request.getUsername() == null | request.getPassword() == null | request.getEmail() == null){
             response.setCode(400);
             response.setMessage("Error: bad request");
             return response;
         }
 
+        // Get data from request
         String username = request.getUsername();
         String password = request.getPassword();
         String email = request.getEmail();
 
-        if(userDB.getUserData(username) != null){
+        // If the user is already registered, throw an error
+        if(db.findUser(username) != null){
             response.setCode(403);
             response.setMessage("Error: already taken");
             return response;
         }
-        try{
-            User_Record user = new User_Record(username, password, email);
-            userDB.addUser(user);
-        }catch(DataAccessException e){
-            throw new RuntimeException(e);
-        }
-        String auth = authDB.makeAuth(username);
+
+        // Logic for adding a user
+        User_Record user = new User_Record(username, password, email);
+        db.addUser(user);
+        String auth = db.createAuthToken();
+
+        // Success Response
         response.setCode(200);
         response.setUsername(username);
         response.setAuthToken(auth);
+        response.setSuccess(true);
         return response;
     }
 }

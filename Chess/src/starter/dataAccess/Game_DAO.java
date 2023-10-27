@@ -2,6 +2,7 @@ package dataAccess;
 
 import chess.ChessGame;
 
+import java.util.Collection;
 import java.util.HashMap;
 
 /**

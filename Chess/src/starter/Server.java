@@ -9,13 +9,13 @@ public class Server {
             Spark.port(port);
             Spark.externalStaticFileLocation("web/");
 
-            // each of the methods
-            Spark.delete("/db", (request, response) -> ClearApplicationHand.handle(request, response));
-            Spark.post("/user", (request, response) -> RegisterHand.handle(request, response));
-//            Spark.post("/session", (request, response) -> LoginHand.handle(request, response));
-//            Spark.delete("/session", (request, response) -> LogoutHand.handle(request, response));
-//            Spark.get("/game", (request, response) -> ListGamesHand.handle(request, response));
-//            Spark.post("/game", (request, response) -> CreateGameHand.handle(request, response));
+            // Each of the contexts
+            Spark.delete("/db", ClearApplicationHand::handle);
+            Spark.post("/user", RegisterHand::handle);
+            Spark.post("/session", LoginHand::handle);
+            Spark.delete("/session", LogoutHand::handle);
+            Spark.get("/game", ListGamesHand::handle);
+            Spark.post("/game", CreateGameHand::handle);
 //            Spark.put("/game", (request, response) -> JoinGameHand.handle(request, response));
 
             Spark.awaitInitialization();
