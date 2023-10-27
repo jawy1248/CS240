@@ -31,8 +31,16 @@ public class JoinGame {
 
         // Logic to join a game
         String username = db.getUsername(authToken);
-        if(color != null)
-            db.joinGame(color, gameID, username);
+        if(color != null) {
+            // Checking if color was already taken
+            boolean temp = db.findGameColor(color, gameID);
+            if(temp){
+                responseBad.setCode(403);
+                responseBad.setMessage("Error: already taken");
+                return responseBad;
+            }else
+                db.joinGame(color, gameID, username);
+        }
         else
             db.observeGame(gameID, username);
 

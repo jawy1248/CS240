@@ -27,8 +27,8 @@ public class Game_DAO {
      * @param game Game_Record object to be added
      */
     public void addGame(Game_Record game){
-        whiteUsername.put(game.gameID(), game.whiteUser());
-        blackUsername.put(game.gameID(), game.blackUser());
+        whiteUsername.put(game.gameID(), game.whiteUsername());
+        blackUsername.put(game.gameID(), game.blackUsername());
         gameName.put(game.gameID(), game.gameName());
         gameObjects.put(game.gameID(), game.game());
     }
@@ -72,6 +72,14 @@ public class Game_DAO {
         gameName.clear();
         gameObjects.clear();
         gameObservers.clear();
+    }
+
+    public boolean findGameColor(ChessGame.TeamColor color, int gameID){
+        String temp = switch (color) {
+            case WHITE -> whiteUsername.get(gameID);
+            case BLACK -> blackUsername.get(gameID);
+        };
+        return temp != null;
     }
 
     // --------------- SETTERS & GETTERS ---------------

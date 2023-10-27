@@ -114,6 +114,8 @@ public class Database {
      */
     public void observeGame(int gameID, String username){ gameDB.addObserver(gameID, username);}
 
+    public boolean findGameColor(ChessGame.TeamColor color, int gameID){ return gameDB.findGameColor(color, gameID); }
+
     /**
      * Lists all the games as a HashSet of Game_Records
      * @return HashSet of Game_Records currently in use
