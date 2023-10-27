@@ -16,7 +16,7 @@ public class Server {
             Spark.delete("/session", LogoutHand::handle);
             Spark.get("/game", ListGamesHand::handle);
             Spark.post("/game", CreateGameHand::handle);
-//            Spark.put("/game", (request, response) -> JoinGameHand.handle(request, response));
+            Spark.put("/game", JoinGameHand::handle);
 
             Spark.awaitInitialization();
             System.out.println("Listening on port " + port);

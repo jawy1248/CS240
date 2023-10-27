@@ -41,6 +41,7 @@ public class Register {
         User_Record user = new User_Record(username, password, email);
         db.addUser(user);
         String auth = db.createAuthToken();
+        db.addAuthToken(new Auth_Record(username, auth));
 
         // Success Response
         response.setCode(200);

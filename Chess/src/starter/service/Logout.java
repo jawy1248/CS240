@@ -25,7 +25,8 @@ public class Logout {
         }
 
         // Logic for logging out
-        db.removeAuthToken(authToken);
+        String username = db.getUsername(authToken);
+        db.removeAuthToken(username);
 
         // Success Response
         response.setCode(200);

@@ -14,6 +14,7 @@ public class JoinGame_Req implements Request {
      */
     private ChessGame.TeamColor playerColor;
     private int gameID;
+    private String authToken;
 
     /**
      * Constructor - sets player color and game ID
@@ -29,8 +30,13 @@ public class JoinGame_Req implements Request {
     public ChessGame.TeamColor getPlayerColor(){
         return playerColor;
     }
-
     public int getGameId(){
         return gameID;
+    }
+    public String getAuthToken(){
+        return authToken;
+    }
+    public void setAuthToken(String authToken){
+        this.authToken = authToken;
     }
 }

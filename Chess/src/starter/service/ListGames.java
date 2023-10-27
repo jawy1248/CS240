@@ -1,10 +1,12 @@
 package service;
 
+import chess.Game;
 import dataAccess.*;
 import request.*;
 import response.*;
 
 import java.util.Collection;
+import java.util.HashSet;
 
 /**
  * Lists the games on the server(memory)
@@ -33,9 +35,10 @@ public class ListGames {
         }
 
         // Logic for listing games
-
+        HashSet<Game> games = db.listGames();
 
         // Success Response
+        response.setGames(games);
         response.setCode(200);
         response.setSuccess(true);
         return response;

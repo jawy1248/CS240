@@ -10,8 +10,8 @@ public class User_DAO {
      * Private variables include the passwords and emails of the users
      * where the username is the unique ID used to identify
      */
-    private static HashMap<String, String> passwords = new HashMap<String, String>();
-    private static HashMap<String, String> emails = new HashMap<String, String>();
+    private HashMap<String, String> passwords = new HashMap<String, String>();
+    private HashMap<String, String> emails = new HashMap<String, String>();
 
     /**
      * adds a user to the database

@@ -36,6 +36,13 @@ public class Login {
             return response;
         }
 
+//        // If the user is already logged in, it is invalid
+//        if(db.findUserAuth(username)){
+//            response.setCode(500);
+//            response.setMessage("Error: bad request");
+//            return response;
+//        }
+
         // Logic for logging in
         String auth = db.createAuthToken();
         db.addAuthToken(new Auth_Record(username, auth));

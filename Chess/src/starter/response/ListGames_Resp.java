@@ -1,6 +1,8 @@
 package response;
 
-import java.util.Collection;
+import chess.Game;
+
+import java.util.HashSet;
 
 /**
  * Successful response of the List Games request
@@ -10,13 +12,13 @@ public class ListGames_Resp implements Response{
      * Games object which hold all the games
      * should hold gameID, whiteUsername, blackUsername, and gameName
      */
-    private Collection games;
+    private HashSet<Game> games;
     private int code;
     private String message;
     private boolean success;
 
     // ----- Setters -----
-    public void setGames(Collection games) {
+    public void setGames(HashSet<Game> games) {
         this.games = games;
     }
     public void setCode(int code) {
@@ -30,7 +32,7 @@ public class ListGames_Resp implements Response{
     }
 
     // ----- Getters -----
-    public Collection getGames() {
+    public HashSet<Game> getGames() {
         return this.games;
     }
     public int getCode() {

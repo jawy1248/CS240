@@ -1,5 +1,7 @@
 package service;
 
+import chess.ChessGame;
+import chess.Game;
 import dataAccess.*;
 import request.*;
 import response.*;
@@ -16,26 +18,31 @@ public class CreateGame {
      */
     public Response createGame(CreateGame_Req request, Database db){
         CreateGame_Resp response = new CreateGame_Resp();
+        String gameName = request.getGameName();
+        String authToken = request.getAuthToken();
 
         // Checking if the name is nothing (bad request)
-        if(request.getGameName() == null){
+        if(gameName == null){
             response.setCode(400);
             response.setMessage("Error: bad request");
             return response;
         }
 
         // Checking if authToken is invalid
-        if(request.getAuthToken() == null) {
+        if(authToken == null || !db.findAuthToken(authToken)) {
             response.setCode(401);
             response.setMessage("Error: unauthorized");
             return response;
         }
 
         // Logic to create a game
-
+        int gameID = db.createGameID();
+        ChessGame game = new Game();
+        Game_Record gameRecord = new Game_Record(gameID, null, null, gameName, game);
+        db.createGame(gameRecord);
 
         // Response
-        response.setGameID(7813628);
+        response.setGameID(gameID);
         response.setCode(200);
         response.setSuccess(true);
         return response;
