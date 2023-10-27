@@ -1,11 +1,7 @@
 package service;
 
-import chess.Game;
 import dataAccess.*;
-import request.*;
 import response.*;
-
-import java.util.Collection;
 import java.util.HashSet;
 
 /**
@@ -35,7 +31,7 @@ public class ListGames {
         }
 
         // Logic for listing games
-        HashSet<Game> games = db.listGames();
+        HashSet<Game_Record> games = db.listGames();
 
         // Success Response
         response.setGames(games);

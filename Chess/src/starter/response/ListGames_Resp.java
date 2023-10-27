@@ -1,7 +1,6 @@
 package response;
 
-import chess.Game;
-
+import dataAccess.Game_Record;
 import java.util.HashSet;
 
 /**
@@ -12,13 +11,13 @@ public class ListGames_Resp implements Response{
      * Games object which hold all the games
      * should hold gameID, whiteUsername, blackUsername, and gameName
      */
-    private HashSet<Game> games;
+    private HashSet<Game_Record> games;
     private int code;
     private String message;
     private boolean success;
 
     // ----- Setters -----
-    public void setGames(HashSet<Game> games) {
+    public void setGames(HashSet<Game_Record> games) {
         this.games = games;
     }
     public void setCode(int code) {
@@ -32,7 +31,7 @@ public class ListGames_Resp implements Response{
     }
 
     // ----- Getters -----
-    public HashSet<Game> getGames() {
+    public HashSet<Game_Record> getGames() {
         return this.games;
     }
     public int getCode() {

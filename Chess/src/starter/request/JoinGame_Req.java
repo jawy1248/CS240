@@ -6,7 +6,7 @@ import chess.ChessGame;
  * Is a request to join a game. This includes the game ID
  * and the player color of the user joining
  */
-public class JoinGame_Req implements Request {
+public class JoinGame_Req {
     /**
      * Two private variables, playerColor and gameID
      * these two variables store the color of the user joining

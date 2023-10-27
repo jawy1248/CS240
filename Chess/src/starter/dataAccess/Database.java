@@ -1,11 +1,10 @@
 package dataAccess;
 
 import chess.ChessGame;
-import chess.Game;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.UUID;
+import java.util.Set;
 
 public class Database {
     /**
@@ -46,5 +45,19 @@ public class Database {
     public boolean findGameID(int gameID){ return gameDB.findGameID(gameID); }
     public void joinGame(ChessGame.TeamColor color, int gameID, String username){ gameDB.joinGame(color, gameID, username); }
     public void observeGame(int gameID, String username){ gameDB.addObserver(gameID, username);}
-    public HashSet<Game> listGames(){ return gameDB.listGames(); }
+    public HashSet<Game_Record> listGames(){
+        HashSet<Game_Record> listOfGames = new HashSet<>();
+        Set<Integer> keys = gameDB.getKeys();
+        for (Integer key : keys) {
+            int temp = key;
+            String tempWhite = gameDB.getWhiteUsername(temp);
+            String tempBlack = gameDB.getBlackUsername(temp);
+            String tempName = gameDB.getGameName(temp);
+            ChessGame tempGame = null;
+
+            Game_Record tempRecord = new Game_Record(temp, tempWhite, tempBlack, tempName, tempGame);
+            listOfGames.add(tempRecord);
+        }
+        return listOfGames;
+    }
 }

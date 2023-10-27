@@ -1,10 +1,10 @@
 package dataAccess;
 
 import chess.ChessGame;
-import chess.Game;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Holds the information of all the current live games
@@ -14,9 +14,10 @@ public class Game_DAO {
      * Private variables include the whiteUsername, blackUsername,
      * gameName, and game object where gameID is the unique ID
      */
-    private HashMap<Integer, String> whiteUsernames = new HashMap<>();
-    private HashMap<Integer, String> blackUsernames = new HashMap<>();
-    private HashMap<Integer, String> gameNames = new HashMap<>();
+    private HashMap<Integer, Integer> gameID = new HashMap<>();
+    private HashMap<Integer, String> whiteUsername = new HashMap<>();
+    private HashMap<Integer, String> blackUsername = new HashMap<>();
+    private HashMap<Integer, String> gameName = new HashMap<>();
     private HashMap<Integer, ChessGame> gameObjects = new HashMap<>();
     private HashMap<Integer, HashSet<String>> gameObservers = new HashMap<>();
     private HashSet<String> observers = new HashSet<>();
@@ -28,9 +29,10 @@ public class Game_DAO {
      * @throws DataAccessException  for invalid addition of game
      */
     public void addGame(Game_Record game){
-        whiteUsernames.put(game.gameID(), game.whiteUser());
-        blackUsernames.put(game.gameID(), game.blackUser());
-        gameNames.put(game.gameID(), game.gameName());
+        gameID.put(game.gameID(), game.gameID());
+        whiteUsername.put(game.gameID(), game.whiteUser());
+        blackUsername.put(game.gameID(), game.blackUser());
+        gameName.put(game.gameID(), game.gameName());
         gameObjects.put(game.gameID(), game.game());
     }
 
@@ -41,32 +43,36 @@ public class Game_DAO {
      * @throws DataAccessException  if the object does not exist
      */
     public void removeGame(int gameID) throws DataAccessException{
-        if(!whiteUsernames.containsKey(gameID))
+        if(!whiteUsername.containsKey(gameID))
             throw new DataAccessException("Game does not exist");
 
-        whiteUsernames.remove(gameID);
-        blackUsernames.remove(gameID);
-        gameNames.remove(gameID);
+        this.gameID.remove(gameID);
+        whiteUsername.remove(gameID);
+        blackUsername.remove(gameID);
+        gameName.remove(gameID);
         gameObjects.remove(gameID);
+        gameObservers.remove(gameID);
     }
 
     /**
      * Completely removes all Games
      */
     public void clearAllGames(){
-        whiteUsernames.clear();
-        blackUsernames.clear();
-        gameNames.clear();
+        gameID.clear();
+        whiteUsername.clear();
+        blackUsername.clear();
+        gameName.clear();
         gameObjects.clear();
+        gameObservers.clear();
     }
 
-    public boolean findGameID(int gameID){ return whiteUsernames.containsKey(gameID); }
+    public boolean findGameID(int gameID){ return whiteUsername.containsKey(gameID); }
 
     public void setWhiteUsername(int gameID, String username){
-        whiteUsernames.replace(gameID, username);
+        whiteUsername.replace(gameID, username);
     }
     public void setBlackUsername(int gameID, String username){
-        blackUsernames.replace(gameID, username);
+        blackUsername.replace(gameID, username);
     }
     public void addObserver(int gameID, String username){
         observers.add(username);
@@ -78,7 +84,10 @@ public class Game_DAO {
             case BLACK -> setBlackUsername(gameID, username);
         }
     }
-    public HashSet<Game> listGames(){
-        return null;
-    }
+
+    public Set<Integer> getKeys(){ return gameObjects.keySet(); }
+    public String getWhiteUsername(int gameID){ return whiteUsername.get(gameID); }
+    public String getBlackUsername(int gameID){ return blackUsername.get(gameID); }
+    public String getGameName(int gameID){ return gameName.get(gameID); }
+
 }

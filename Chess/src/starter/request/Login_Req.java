@@ -4,7 +4,7 @@ package request;
  * Is a request to login. This request contains
  * the username and password of the user
  */
-public class Login_Req implements Request{
+public class Login_Req{
     /**
      * Two private variables for this class include the username and the
      * password. Each of which are strings and hold the corresponding information
