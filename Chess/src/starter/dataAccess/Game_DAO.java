@@ -74,6 +74,12 @@ public class Game_DAO {
         gameObservers.clear();
     }
 
+    /**
+     * Searches if a game has a specific color taken
+     * @param color BLACK/WHITE, the color to check if it is taken
+     * @param gameID String of the gameID to look at
+     * @return true if found, false otherwise
+     */
     public boolean findGameColor(ChessGame.TeamColor color, int gameID){
         String temp = switch (color) {
             case WHITE -> whiteUsername.get(gameID);

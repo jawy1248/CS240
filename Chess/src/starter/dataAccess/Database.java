@@ -114,6 +114,12 @@ public class Database {
      */
     public void observeGame(int gameID, String username){ gameDB.addObserver(gameID, username);}
 
+    /**
+     * Searches if a game has a specific color taken
+     * @param color BLACK/WHITE, the color to check if it is taken
+     * @param gameID String of the gameID to look at
+     * @return true if found, false otherwise
+     */
     public boolean findGameColor(ChessGame.TeamColor color, int gameID){ return gameDB.findGameColor(color, gameID); }
 
     /**
