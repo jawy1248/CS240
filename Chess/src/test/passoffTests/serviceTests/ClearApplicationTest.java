@@ -17,8 +17,10 @@ public class ClearApplicationTest {
         // Create and clear database
         db = new Database();
         ClearApplication clearService = new ClearApplication();
-        Response clearResp = clearService.clearApp(db);
+        clearService.clearApp(db);
 
-        Assertions.assertEquals(clearResp.getCode(), 200, "Clear application was not successful");
+        Assertions.assertTrue(db.getUserDB().getPasswords().isEmpty(), "Clear application (user) was not successful");
+        Assertions.assertTrue(db.getAuthDB().getAllAuth().isEmpty(), "Clear application (auth) was not successful");
+        Assertions.assertTrue(db.getGameDB().getGameObjects().isEmpty(), "Clear application (game) was not successful");
     }
 }

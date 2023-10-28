@@ -34,8 +34,7 @@ public class LogoutTest {
         Logout logoutService = new Logout();
         Response logoutResp = logoutService.logout(registerResp.getAuthToken(), db);
 
-        Assertions.assertNotNull(logoutResp, "Response was null");
-        Assertions.assertEquals(logoutResp.getCode(), 200, "Code was not 200");
+        Assertions.assertNull(db.getAuthDB().getUsername(registerResp.getAuthToken()), "Logout was unsuccessful");
     }
 
     @Test

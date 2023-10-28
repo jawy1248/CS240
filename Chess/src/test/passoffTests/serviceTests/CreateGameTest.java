@@ -36,8 +36,7 @@ public class CreateGameTest {
         CreateGame createService = new CreateGame();
         CreateGame_Resp createResp = (CreateGame_Resp) createService.createGame(createReq, db);
 
-        Assertions.assertNotNull(createResp, "Response was null");
-        Assertions.assertEquals(createResp.getCode(), 200, "Code was not 200");
+        Assertions.assertEquals(db.getGameDB().getGameName(createResp.getGameID()), gameName, "Game names do not match");
     }
 
     @Test

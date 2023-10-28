@@ -50,8 +50,7 @@ public class ListGamesTest {
         ListGames listService = new ListGames();
         ListGames_Resp listResp = (ListGames_Resp) listService.listGames(registerResp.getAuthToken(), db);
 
-        Assertions.assertNotNull(listResp, "Response was null");
-        Assertions.assertEquals(listResp.getCode(), 200, "Code was not 200");
+        Assertions.assertEquals(db.getGameDB().getGameNames().size(), 4, "Number of games does not match");
     }
 
     @Test

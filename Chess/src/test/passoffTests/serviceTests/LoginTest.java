@@ -40,8 +40,7 @@ public class LoginTest {
         Login loginService = new Login();
         RegisterLogin_Resp loginResp = (RegisterLogin_Resp) loginService.login(loginReq, db);
 
-        Assertions.assertNotNull(loginResp, "Response was null");
-        Assertions.assertEquals(loginResp.getCode(), 200, "Code was not 200");
+        Assertions.assertEquals(db.getAuthDB().getUsername(loginResp.getAuthToken()), username, "User is not logged in");
     }
 
     @Test

@@ -100,4 +100,11 @@ public class Game_DAO {
     public String getBlackUsername(int gameID){ return blackUsername.get(gameID); }
     public String getGameName(int gameID){ return gameName.get(gameID); }
 
+    // Private Variable Getters
+
+    public HashMap<Integer, String> getWhiteUsernames() { return whiteUsername; }
+    public HashMap<Integer, String> getBlackUsernames() { return blackUsername; }
+    public HashMap<Integer, String> getGameNames() { return gameName; }
+    public HashMap<Integer, ChessGame> getGameObjects() { return gameObjects; }
+
 }

@@ -1,6 +1,7 @@
 package dataAccess;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 
 /**
@@ -63,5 +64,6 @@ public class Auth_DAO {
     public void clearAllAuth(){
         Auth.clear();
     }
+    public HashMap<String, String> getAllAuth() { return Auth; }
 
 }

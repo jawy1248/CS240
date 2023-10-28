@@ -144,4 +144,8 @@ public class Database {
         // Return the list
         return listOfGames;
     }
+
+    public User_DAO getUserDB(){ return userDB; }
+    public Auth_DAO getAuthDB(){ return authDB; }
+    public Game_DAO getGameDB(){ return gameDB; }
 }

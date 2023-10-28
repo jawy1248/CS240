@@ -40,4 +40,7 @@ public class User_DAO {
         passwords.clear();
         emails.clear();
     }
+
+    public HashMap<String, String> getPasswords() { return passwords; }
+    public HashMap<String, String> getEmails() { return emails; }
 }

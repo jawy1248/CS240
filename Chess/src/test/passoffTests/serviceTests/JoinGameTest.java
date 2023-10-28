@@ -45,8 +45,7 @@ public class JoinGameTest {
         JoinGame joinService = new JoinGame();
         Response joinResp = joinService.joinGame(joinReq, db);
 
-        Assertions.assertNotNull(joinResp, "Response was null");
-        Assertions.assertEquals(joinResp.getCode(), 200, "Code was not 200");
+        Assertions.assertEquals(db.getGameDB().getWhiteUsername(createResp.getGameID()), username, "White username not equal");
     }
 
     @Test

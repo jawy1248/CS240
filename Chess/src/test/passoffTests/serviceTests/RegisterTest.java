@@ -29,8 +29,7 @@ public class RegisterTest {
         Register registerService = new Register();
         RegisterLogin_Resp registerResp = (RegisterLogin_Resp) registerService.register(registerReq, db);
 
-        Assertions.assertNotNull(registerResp, "Response was null");
-        Assertions.assertEquals(registerResp.getCode(), 200, "Response code was not 200");
+        Assertions.assertEquals(db.getAuthDB().getUsername(registerResp.getAuthToken()), username, "User is not logged in");
     }
 
     @Test
