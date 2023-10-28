@@ -16,7 +16,7 @@ public class CreateGame_Req{
      * @param gameName  the name of the game being played/stored
      * @param authToken authToken of the player trying to create a game
      */
-    CreateGame_Req(String gameName, String authToken){
+    public CreateGame_Req(String gameName, String authToken){
         this.gameName = gameName;
         this.authToken = authToken;
     }
