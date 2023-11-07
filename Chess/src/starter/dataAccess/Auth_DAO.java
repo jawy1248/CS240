@@ -11,7 +11,6 @@ import java.util.UUID;
  */
 public class Auth_DAO {
     private final Connection connection;
-    private Auth_Record authRecord;
     public Auth_DAO(Connection connection){ this.connection = connection; }
 
     public void clearAuthDB() throws DataAccessException{
@@ -35,18 +34,6 @@ public class Auth_DAO {
         }
 
         return authT;
-    }
-
-    public void addAuth(Auth_Record auth) throws DataAccessException{
-        String sqlReq = "INSERT INTO authToken (authToken, username) VALUES(?,?);";
-        try(PreparedStatement req = connection.prepareStatement(sqlReq)){
-            req.setString(1, auth.authToken());
-            req.setString(2, auth.username());
-            req.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw new DataAccessException("Error encountered while inserting a person to the database");
-        }
     }
 
     public void removeAuth(String authToken) throws DataAccessException {
