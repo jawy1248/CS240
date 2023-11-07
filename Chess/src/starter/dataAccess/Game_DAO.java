@@ -120,13 +120,13 @@ public class Game_DAO {
         try (PreparedStatement req = connection.prepareStatement(sqlReq)) {
             results = req.executeQuery();
             while (results.next()) {
-                    temp = new Game_Record(results.getInt("results"), results.getString("whiteUsername"),
+                    temp = new Game_Record(results.getInt("gameID"), results.getString("whiteUsername"),
                             results.getString("blackUsername"), results.getString("gameName"),
                             gson.fromJson(results.getString("game"), ChessGame.class) );
                     tempHash.add(temp);
             }
         } catch (SQLException e) {
-            throw new DataAccessException("Error occurred accessing all games");
+            throw new DataAccessException(e.toString());
         }
         return tempHash;
     }
