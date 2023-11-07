@@ -1,110 +1,122 @@
 package dataAccess;
 
 import chess.ChessGame;
-import java.util.HashMap;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashSet;
-import java.util.Set;
+import java.util.UUID;
+
+import static chess.ChessGame.TeamColor.*;
+
+
+import com.google.gson.Gson;
 
 /**
  * Database for all the current live games
  */
 public class Game_DAO {
-    /**
-     * Private variables include the whiteUsername, blackUsername,
-     * gameName, and gameObject where gameID is the unique ID.
-     * It also includes a HashSet of game observers for each game
-     */
-    private HashMap<Integer, String> whiteUsername = new HashMap<>();
-    private HashMap<Integer, String> blackUsername = new HashMap<>();
-    private HashMap<Integer, String> gameName = new HashMap<>();
-    private HashMap<Integer, ChessGame> gameObjects = new HashMap<>();
-    private HashMap<Integer, HashSet<String>> gameObservers = new HashMap<>();
-    private HashSet<String> observers = new HashSet<>();
+    private final Connection connection;
 
+    public Game_DAO(Connection connection) { this.connection = connection; }
 
-    /**
-     * Adds a game to the DB
-     * @param game Game_Record object to be added
-     */
-    public void addGame(Game_Record game){
-        whiteUsername.put(game.gameID(), game.whiteUsername());
-        blackUsername.put(game.gameID(), game.blackUsername());
-        gameName.put(game.gameID(), game.gameName());
-        gameObjects.put(game.gameID(), game.game());
-    }
-
-    /**
-     * Searches if a gameID is a valid current ID
-     * @param gameID int of gameID to be found
-     * @return true if found, false otherwise
-     */
-    public boolean findGameID(int gameID){ return whiteUsername.containsKey(gameID); }
-
-    /**
-     * Adds a user to a game already created as either white or black
-     * @param color BLACK/WHITE to say request color
-     * @param gameID int of gameID to be added to
-     * @param username String of username to be added
-     */
-    public void joinGame(ChessGame.TeamColor color, int gameID, String username){
-        switch (color) {
-            case WHITE -> setWhiteUsername(gameID, username);
-            case BLACK -> setBlackUsername(gameID, username);
+    public void clearUserDB() throws DataAccessException{
+        String sqlReq = "DELETE from game;";
+        try (PreparedStatement req = connection.prepareStatement(sqlReq)) {
+            req.executeUpdate();
+        } catch (SQLException e) {
+            throw new DataAccessException("Error occurred clearing GameDB");
         }
     }
 
-    /**
-     * Adds a user to a game already created as an observer
-     * @param gameID int of gameID to be added to
-     * @param username String of username to be added
-     */
-    public void addObserver(int gameID, String username){
-        observers.add(username);
-        gameObservers.replace(gameID, observers);
+    public void addGame(Game_Record game) throws DataAccessException{
+        Gson gson = new Gson();
+        String sqlReq = "INSERT INTO game (gameID, whiteUsername, blackUsername, gameName, game) VALUES(?,?,?,?,?);";
+        try(PreparedStatement req = connection.prepareStatement(sqlReq)){
+            req.setInt(1, game.gameID());
+            req.setString(2, game.whiteUsername());
+            req.setString(3, game.blackUsername());
+            req.setString(4, game.gameName());
+            req.setString(5, gson.toJson(game.game()));
+            req.executeUpdate();
+        } catch (SQLException e) {
+            throw new DataAccessException("Error occurred adding game");
+        }
     }
 
-    /**
-     * Completely clears all the data in the database
-     */
-    public void clearAllGames(){
-        whiteUsername.clear();
-        blackUsername.clear();
-        gameName.clear();
-        gameObjects.clear();
-        gameObservers.clear();
+    public Game_Record findGame(int gameID) throws DataAccessException{
+        Game_Record temp;
+        ResultSet results;
+        Gson gson = new Gson();
+
+        String sqlReq = "SELECT * FROM game WHERE gameID = ?;";
+        try(PreparedStatement req = connection.prepareStatement(sqlReq)){
+            req.setInt(1, gameID);
+            results = req.executeQuery();
+            if (results.next()){
+                temp = new Game_Record(results.getInt("gameID"), results.getString("whiteUsername"),
+                        results.getString("blackUsername"), results.getString("gameName"),
+                        gson.fromJson(results.getString("game"), ChessGame.class) );
+                return temp;
+            } else
+                return null;
+
+        } catch (SQLException e) {
+            throw new DataAccessException("Error occurred accessing game");
+        }
     }
 
-    /**
-     * Searches if a game has a specific color taken
-     * @param color BLACK/WHITE, the color to check if it is taken
-     * @param gameID String of the gameID to look at
-     * @return true if found, false otherwise
-     */
-    public boolean findGameColor(ChessGame.TeamColor color, int gameID){
-        String temp = switch (color) {
-            case WHITE -> whiteUsername.get(gameID);
-            case BLACK -> blackUsername.get(gameID);
+    public HashSet<Game_Record> findAllGames() throws DataAccessException {
+        Game_Record temp;
+        ResultSet results;
+        Gson gson = new Gson();
+        HashSet<Game_Record> tempHash = new HashSet<>();
+
+        String sqlReq = "SELECT * FROM game;";
+        try (PreparedStatement req = connection.prepareStatement(sqlReq)) {
+            results = req.executeQuery();
+            while (results.next()) {
+                    temp = new Game_Record(results.getInt("results"), results.getString("whiteUsername"),
+                            results.getString("blackUsername"), results.getString("gameName"),
+                            gson.fromJson(results.getString("game"), ChessGame.class) );
+                    tempHash.add(temp);
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException("Error occurred accessing all games");
+        }
+        return tempHash;
+    }
+
+    public int getGameSize() {
+        ResultSet results;
+        String sqlReq = "SELECT COUNT(*) AS row_count FROM game;";
+        int count=0;
+        try (PreparedStatement req = connection.prepareStatement(sqlReq)) {
+            results = req.executeQuery();
+            if (results.next()) {
+                count = results.getInt("row_count");
+            }
+            return count;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void joinGame(ChessGame.TeamColor color, String gameID, String username) {
+        String team = switch (color) {
+            case BLACK -> "blackUsername";
+            case WHITE -> "whiteUsername";
         };
-        return temp != null;
+        String sqlReq = "UPDATE game SET " + team + " = ? WHERE gameID = ?;";
+        try(PreparedStatement req = connection.prepareStatement(sqlReq)){
+            req.setString(1,username);
+            req.setString(2,gameID);
+            req.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
-
-    // --------------- SETTERS & GETTERS ---------------
-    public void setWhiteUsername(int gameID, String username){
-        whiteUsername.replace(gameID, username);
-    }
-    public void setBlackUsername(int gameID, String username){
-        blackUsername.replace(gameID, username);
-    }
-    public Set<Integer> getKeys(){ return gameObjects.keySet(); }
-    public String getWhiteUsername(int gameID){ return whiteUsername.get(gameID); }
-    public String getBlackUsername(int gameID){ return blackUsername.get(gameID); }
-    public String getGameName(int gameID){ return gameName.get(gameID); }
-
-    // Private Variable Getters
-
-    public HashMap<Integer, String> getWhiteUsernames() { return whiteUsername; }
-    public HashMap<Integer, String> getBlackUsernames() { return blackUsername; }
-    public HashMap<Integer, String> getGameNames() { return gameName; }
-    public HashMap<Integer, ChessGame> getGameObjects() { return gameObjects; }
 
 }

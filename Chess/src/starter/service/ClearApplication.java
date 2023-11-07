@@ -2,6 +2,7 @@ package service;
 
 import dataAccess.*;
 import response.*;
+import java.sql.Connection;
 
 /**
  * Clears the application
@@ -10,14 +11,15 @@ public class ClearApplication {
     /**
      * Clears the application
      *
-     * @return has no return. Always returns null
+     * @return returns the response
      */
-    public Response clearApp(Database db){
-        // If there is no database, throw an error
-        if(db == null)
-            return new Failure_Resp();
+    public Response clearApp(Connection connection){
+        User_DAO userDB = new User_DAO(connection);
+        Auth_DAO authDB = new Auth_DAO(connection);
+        Game_DAO gameDB = new Game_DAO(connection);
 
         // Logic for clearing the database
+        authDB.clearAuthDB();
         db.clearAll();
 
         // Success Response

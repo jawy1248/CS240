@@ -3,6 +3,7 @@ package service;
 import dataAccess.*;
 import request.*;
 import response.*;
+import java.sql.Connection;
 
 /**
  * Registers and creates a user in the database
@@ -11,11 +12,16 @@ public class Register {
     /**
      * Creates and saves a user into the database
      *
-     * @param request   Request information for the user to create a profile
-     * @param db        Database
-     * @return          User information if success, error message otherwise
+     * @param request Request information for the user to create a profile
+     * @param connection Connection to the database
+     * @return User information if success, error message otherwise
+     * @throws DataAccessException error accessing the data
      */
-    public Response register(Register_Req request, Database db){
+    public Response register(Register_Req request, Connection connection) throws DataAccessException{
+
+        User_DAO userDAO = new User_DAO(connection);
+        Auth_DAO authDAO = new Auth_DAO(connection);
+
         RegisterLogin_Resp response = new RegisterLogin_Resp();
         response.setSuccess(false);
 
@@ -32,17 +38,19 @@ public class Register {
         String email = request.getEmail();
 
         // If the user is already registered, throw an error
-        if(db.findUser(username) != null){
+        if(userDAO.findUser(username) != null){
             response.setCode(403);
             response.setMessage("Error: already taken");
             return response;
         }
+        try{
+            User_Record user = new User_Record(username, password, email);
+            userDAO.addUser(user);
+        } catch(DataAccessException e){
+            throw new RuntimeException(e);
+        }
 
-        // Logic for adding a user
-        User_Record user = new User_Record(username, password, email);
-        db.addUser(user);
-        String auth = db.createAuthToken();
-        db.addAuthToken(new Auth_Record(username, auth));
+        String auth = authDAO.makeAuth(username);
 
         // Success Response
         response.setCode(200);
