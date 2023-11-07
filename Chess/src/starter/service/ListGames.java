@@ -3,41 +3,33 @@ package service;
 import dataAccess.*;
 import response.*;
 import java.util.HashSet;
+import java.sql.Connection;
 
-/**
- * Lists the games on the server(memory)
- */
 public class ListGames {
-    /**
-     * Lists the games in the Game DAO
-     *
-     * @return  A list of games in the database if successful, or a failure message otherwise
-     */
-    public Response listGames(String authToken, Database db) {
+    public Response listGames(String authToken, Connection connection) {
         ListGames_Resp response = new ListGames_Resp();
         response.setSuccess(false);
 
-        // If any fields are null, it is a bad request
-        if (authToken == null) {
-            response.setCode(500);
-            response.setMessage("Error: bad request");
+        try{
+            // Getting the game and auth DB
+            Game_DAO gameDB = new Game_DAO(connection);
+            Auth_DAO authDB = new Auth_DAO(connection);
+
+            Auth_Record auth = authDB.findAuth(authToken);
+
+            if(auth == null) {
+                response.setCode(401);
+                response.setMessage("Error: unauthorized");
+                return response;
+            }
+
+            response.setGames(gameDB.findAllGames());
+            response.setCode(200);
+            response.setSuccess(true);
             return response;
+
+        } catch(Exception e){
+            throw new RuntimeException(e);
         }
-
-        // If the user is unauthorized (not logged in)
-        if (!db.findAuthToken(authToken)) {
-            response.setCode(401);
-            response.setMessage("Error: unauthorized");
-            return response;
-        }
-
-        // Logic for listing games
-        HashSet<Game_Record> games = db.listGames();
-
-        // Success Response
-        response.setGames(games);
-        response.setCode(200);
-        response.setSuccess(true);
-        return response;
     }
 }

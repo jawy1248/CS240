@@ -25,7 +25,7 @@ public class JoinGame {
             Game_Record game = gameDB.findGame(gameID);
             Auth_Record auth = authDB.findAuth(authToken);
 
-            // Checking if any values are null
+            // Checking if any necessary values are null
             if(game == null || authToken == null) {
                 responseBad.setCode(400);
                 responseBad.setMessage("Error: bad request");
@@ -51,6 +51,7 @@ public class JoinGame {
                     return response;
                 }
             } else {
+                // If it is an observer, send success response
                 response.setCode(200);
                 response.setSuccess(true);
                 return response;

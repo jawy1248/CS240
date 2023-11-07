@@ -6,6 +6,8 @@ import request.CreateGame_Req;
 import response.Response;
 import service.CreateGame;
 
+import java.sql.Connection;
+
 public class CreateGameHand {
     public static String handle(spark.Request request, spark.Response response) {
         System.out.println("Create Game Handler");
@@ -17,11 +19,15 @@ public class CreateGameHand {
         gameName.setAuthToken(authToken);
 
         Database db = new Database();
+        try {
+            Connection connection = db.getConnection();
+            CreateGame service = new CreateGame();
+            Response resp = service.createGame(gameName, connection);
+            response.status(resp.getCode());
 
-        CreateGame service = new CreateGame();
-        Response resp = service.createGame(gameName, db);
-        response.status(resp.getCode());
-
-        return gson.toJson(resp);
+            return gson.toJson(resp);
+        } catch (Exception e){
+            throw new RuntimeException(e);
+        }
     }
 }

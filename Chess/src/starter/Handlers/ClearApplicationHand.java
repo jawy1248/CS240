@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import response.Response;
 import service.ClearApplication;
 import dataAccess.Database;
+import java.sql.Connection;
 
 /**
  * The handler for the clear application
@@ -14,10 +15,15 @@ public class ClearApplicationHand {
 
         Gson gson = new Gson();
         Database db = new Database();
-        ClearApplication service = new ClearApplication();
-        Response resp = service.clearApp(db);
-        response.status(resp.getCode());
+        try {
+            Connection connection = db.getConnection();
+            ClearApplication service = new ClearApplication();
+            Response resp = service.clearApp(connection);
+            response.status(resp.getCode());
 
-        return gson.toJson(resp);
+            return gson.toJson(resp);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

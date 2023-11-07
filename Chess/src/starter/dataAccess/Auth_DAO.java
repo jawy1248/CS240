@@ -77,7 +77,7 @@ public class Auth_DAO {
         }
     }
 
-    public Auth_Record findAuth(String authToken) throws DataAccessException{
+    public Auth_Record findAuth(String authToken){
         Auth_Record temp;
         ResultSet results;
 
@@ -92,7 +92,7 @@ public class Auth_DAO {
                 return null;
 
         } catch (SQLException e) {
-            throw new DataAccessException("Error accessing authToken");
+            throw new RuntimeException(e);
         }
     }
 
