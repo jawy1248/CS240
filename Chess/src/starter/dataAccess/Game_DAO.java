@@ -2,11 +2,16 @@ package dataAccess;
 
 import chess.ChessGame;
 
+import java.io.IOException;
 import java.sql.*;
 import java.util.HashSet;
 
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 
 /**
  * Database for all the current live games
@@ -85,7 +90,9 @@ public class Game_DAO {
 
         Game_Record temp;
         ResultSet results;
-        Gson gson = new Gson();
+        var builder = new GsonBuilder();
+        builder.registerTypeAdapter(ChessGame.class, makeGameJSON());
+        var gson = builder.create();
 
         String sqlReq = "SELECT * FROM game WHERE gameID = ?;";
         try(PreparedStatement req = connection.prepareStatement(sqlReq)){
@@ -113,7 +120,9 @@ public class Game_DAO {
 
         Game_Record temp;
         ResultSet results;
-        Gson gson = new Gson();
+        var builder = new GsonBuilder();
+        builder.registerTypeAdapter(ChessGame.class, makeGameJSON());
+        var gson = builder.create();
         HashSet<Game_Record> tempHash = new HashSet<>();
 
         String sqlReq = "SELECT * FROM game;";
@@ -171,6 +180,13 @@ public class Game_DAO {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static TypeAdapter<ChessGame> makeGameJSON(){
+        return new TypeAdapter<>() {
+            public void write(JsonWriter w) throws IOException {  }
+            public ChessGame read(JsonReader r){ return null; };
+        };
     }
 
 }
