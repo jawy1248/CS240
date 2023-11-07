@@ -7,6 +7,9 @@ import service.Logout;
 
 import java.sql.Connection;
 
+/**
+ * Handler for the Logout applications
+ */
 public class LogoutHand {
     public static String handle(spark.Request request, spark.Response response) {
         System.out.println("Logout Handler");
@@ -14,6 +17,7 @@ public class LogoutHand {
         Gson gson = new Gson();
         String authToken = request.headers("Authorization");
 
+        // Get database and connection to SQL
         Database db = new Database();
         try {
             Connection connection = db.getConnection();

@@ -8,6 +8,9 @@ import service.JoinGame;
 
 import java.sql.Connection;
 
+/**
+ * Handler for the JoinGame application
+ */
 public class JoinGameHand {
     public static String handle(spark.Request request, spark.Response response) {
         System.out.println("Join Game Handler");
@@ -18,6 +21,7 @@ public class JoinGameHand {
         String authToken = request.headers("Authorization");
         join.setAuthToken(authToken);
 
+        // Get database and connection to SQL
         Database db = new Database();
         try {
             Connection connection = db.getConnection();

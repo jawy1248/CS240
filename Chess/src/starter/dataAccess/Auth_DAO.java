@@ -7,12 +7,24 @@ import java.sql.SQLException;
 import java.util.UUID;
 
 /**
- * The object that hold all the logged-in users and their corresponding AuthTokens
+ * Data Access Object for the AuthToken database
  */
 public class Auth_DAO {
+    /**
+     * Connection to the SQL database
+     */
     private final Connection connection;
+
+    /**
+     * Constructor for setting the connection
+     * @param connection Connection to the SQL database
+     */
     public Auth_DAO(Connection connection){ this.connection = connection; }
 
+    /**
+     * Creates the database if not already made
+     * @throws SQLException SQL error
+     */
     private void makeAuthDB() throws SQLException {
         String sqlReq =
                 """
@@ -30,13 +42,19 @@ public class Auth_DAO {
         }
     }
 
+    /**
+     * Clears the authToken database
+     * @throws DataAccessException Data access error
+     */
     public void clearAuthDB() throws DataAccessException{
+        // Make sure database exists
         try{
             makeAuthDB();
         } catch(SQLException e){
             throw new DataAccessException(e.toString());
         }
 
+        // SQL instructions for clearing the database
         String sqlReq = "DELETE from authToken;";
         try (PreparedStatement req = connection.prepareStatement(sqlReq)) {
             req.executeUpdate();
@@ -45,13 +63,21 @@ public class Auth_DAO {
         }
     }
 
+    /**
+     * Adds an authToken and username to the data
+     * @param username username of player being added
+     * @return authToken created for that user
+     * @throws DataAccessException data access error
+     */
     public String makeAuth(String username) throws DataAccessException{
+        // Make sure the database exists
         try{
             makeAuthDB();
         } catch(SQLException e){
             throw new DataAccessException(e.toString());
         }
 
+        // Creating an authToken and the SQL instructions to add it
         String authT = UUID.randomUUID().toString();
         String sqlReq = "INSERT INTO authToken (authToken, username) VALUES(?,?);";
         try(PreparedStatement req = connection.prepareStatement(sqlReq)){
@@ -65,13 +91,20 @@ public class Auth_DAO {
         return authT;
     }
 
+    /**
+     * Removes an authToken and username from the database
+     * @param authToken authToken to be removed
+     * @throws DataAccessException data access error
+     */
     public void removeAuth(String authToken) throws DataAccessException {
+        // Make sure the database exists
         try{
             makeAuthDB();
         } catch(SQLException e){
             throw new DataAccessException(e.toString());
         }
 
+        // SQL instructions to remove a single authToken
         String sqlReq = "DELETE FROM authToken WHERE authToken = ?;";
         try (PreparedStatement req = connection.prepareStatement(sqlReq)) {
             req.setString(1, authToken);
@@ -81,7 +114,14 @@ public class Auth_DAO {
         }
     }
 
+    /**
+     * Finds an Auth_Record with the username provided
+     * @param username of record to be found
+     * @return Auth_Record or null if it doesn't exist
+     * @throws DataAccessException Data access error
+     */
     public Auth_Record findAuthWithUsername(String username) throws DataAccessException{
+        // Make sure the database exists
         try{
             makeAuthDB();
         } catch(SQLException e){
@@ -91,6 +131,7 @@ public class Auth_DAO {
         Auth_Record temp;
         ResultSet results;
 
+        // SQL instructions for finding authTokens
         String sqlReq = "SELECT * FROM authToken WHERE username = ?;";
         try(PreparedStatement req = connection.prepareStatement(sqlReq)){
             req.setString(1, username);
@@ -105,7 +146,13 @@ public class Auth_DAO {
         }
     }
 
+    /**
+     * Finds an Auth_Record with the authToken provided
+     * @param authToken of record to be found
+     * @return Auth_Record or null if it doesn't exist
+     */
     public Auth_Record findAuth(String authToken){
+        // Make sure database exists
         try{
             makeAuthDB();
         } catch(SQLException e){
@@ -115,6 +162,7 @@ public class Auth_DAO {
         Auth_Record temp;
         ResultSet results;
 
+        // SQL instructions for finding Record
         String sqlReq = "SELECT * FROM authToken WHERE authToken = ?;";
         try(PreparedStatement req = connection.prepareStatement(sqlReq)){
             req.setString(1, authToken);
@@ -130,13 +178,19 @@ public class Auth_DAO {
         }
     }
 
+    /**
+     * Gets the number of authToken records in the database
+     * @return number of records in database
+     */
     public int getAuthSize() {
+        // Make sure the database exists
         try{
             makeAuthDB();
         } catch(SQLException e){
             throw new RuntimeException(e);
         }
 
+        // SQL instructions for getting count
         ResultSet results;
         String sqlReq = "SELECT COUNT(*) AS row_count FROM AuthToken;";
         int count=0;
@@ -149,7 +203,5 @@ public class Auth_DAO {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-
     }
-
 }

@@ -7,6 +7,9 @@ import service.ListGames;
 
 import java.sql.Connection;
 
+/**
+ * Handler for the ListGames application
+ */
 public class ListGamesHand {
     public static String handle(spark.Request request, spark.Response response) {
         System.out.println("List Games Handler");
@@ -14,6 +17,7 @@ public class ListGamesHand {
         Gson gson = new Gson();
         String authToken = request.headers("Authorization");
 
+        // Get database and connection to SQL
         Database db = new Database();
         try {
             Connection connection = db.getConnection();

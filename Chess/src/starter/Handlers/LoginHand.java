@@ -8,6 +8,9 @@ import service.Login;
 
 import java.sql.Connection;
 
+/**
+ * Handler for the LoginHandler
+ */
 public class LoginHand {
     public static String handle(spark.Request request, spark.Response response) {
         System.out.println("Login Handler");
@@ -16,6 +19,7 @@ public class LoginHand {
         String temp = request.body();
         Login_Req requested = gson.fromJson(temp, Login_Req.class);
 
+        // Get database and connection to SQL
         Database db = new Database();
         try {
             Connection connection = db.getConnection();

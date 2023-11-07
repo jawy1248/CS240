@@ -8,6 +8,9 @@ import service.CreateGame;
 
 import java.sql.Connection;
 
+/**
+ * Handler for the CreateGame application
+ */
 public class CreateGameHand {
     public static String handle(spark.Request request, spark.Response response) {
         System.out.println("Create Game Handler");
@@ -18,6 +21,7 @@ public class CreateGameHand {
         String authToken = request.headers("Authorization");
         gameName.setAuthToken(authToken);
 
+        // Get database and connection to SQL
         Database db = new Database();
         try {
             Connection connection = db.getConnection();

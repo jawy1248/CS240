@@ -2,10 +2,15 @@ package service;
 
 import dataAccess.*;
 import response.*;
-import java.util.HashSet;
 import java.sql.Connection;
 
 public class ListGames {
+    /**
+     * Creates a list of games in play
+     * @param authToken authToken for request
+     * @param connection SQL connection
+     * @return Response for HTTP
+     */
     public Response listGames(String authToken, Connection connection) {
         ListGames_Resp response = new ListGames_Resp();
         response.setSuccess(false);

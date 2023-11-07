@@ -1,26 +1,31 @@
 package dataAccess;
 
-import chess.ChessGame;
+import chess.*;
+import com.google.gson.*;
 
-import java.io.IOException;
 import java.sql.*;
 import java.util.HashSet;
-
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
+import java.lang.reflect.Type;
 
 /**
- * Database for all the current live games
+ * Data access object for the game database
  */
 public class Game_DAO {
+    /**
+     * Connection to the SQL database
+     */
     private final Connection connection;
 
+    /**
+     * Constructor to set the connection
+     * @param connection Connection to the SQL database
+     */
     public Game_DAO(Connection connection) { this.connection = connection; }
 
+    /**
+     * Creates the database if not already made
+     * @throws SQLException SQL error
+     */
     private void makeGameDB() throws SQLException {
         String sqlReq =
                 """
@@ -42,13 +47,19 @@ public class Game_DAO {
         }
     }
 
+    /**
+     * Clears the game database
+     * @throws DataAccessException data access error
+     */
     public void clearGameDB() throws DataAccessException{
+        // Make sure database exists
         try{
             makeGameDB();
         } catch(SQLException e){
             throw new DataAccessException(e.toString());
         }
 
+        // SQL instructions for deleting all games
         String sqlReq = "DELETE from game;";
         try (PreparedStatement req = connection.prepareStatement(sqlReq)) {
             req.executeUpdate();
@@ -58,12 +69,14 @@ public class Game_DAO {
     }
 
     public int addGame(Game_Record game) throws DataAccessException{
+        // Make sure database exists
         try{
             makeGameDB();
         } catch(SQLException e){
             throw new DataAccessException(e.toString());
         }
 
+        // SQL instructions for adding a single game to database
         Gson gson = new Gson();
         String sqlReq = "INSERT INTO game (whiteUsername, blackUsername, gameName, game) VALUES(?,?,?,?);";
         try(PreparedStatement req = connection.prepareStatement(sqlReq, Statement.RETURN_GENERATED_KEYS)){
@@ -82,6 +95,7 @@ public class Game_DAO {
     }
 
     public Game_Record findGame(int gameID){
+        // Make sure database exists
         try{
             makeGameDB();
         } catch(SQLException e){
@@ -90,10 +104,8 @@ public class Game_DAO {
 
         Game_Record temp;
         ResultSet results;
-        var builder = new GsonBuilder();
-        builder.registerTypeAdapter(ChessGame.class, makeGameJSON());
-        var gson = builder.create();
 
+        // SQL instructions for finding a single game
         String sqlReq = "SELECT * FROM game WHERE gameID = ?;";
         try(PreparedStatement req = connection.prepareStatement(sqlReq)){
             req.setInt(1, gameID);
@@ -101,7 +113,7 @@ public class Game_DAO {
             if (results.next()){
                 temp = new Game_Record(results.getInt("gameID"), results.getString("whiteUsername"),
                         results.getString("blackUsername"), results.getString("gameName"),
-                        gson.fromJson(results.getString("game"), ChessGame.class) );
+                        deserializeGame(results.getString("game")) );
                 return temp;
             } else
                 return null;
@@ -112,6 +124,7 @@ public class Game_DAO {
     }
 
     public HashSet<Game_Record> findAllGames() throws DataAccessException {
+        // Make sure database exists
         try{
             makeGameDB();
         } catch(SQLException e){
@@ -120,18 +133,16 @@ public class Game_DAO {
 
         Game_Record temp;
         ResultSet results;
-        var builder = new GsonBuilder();
-        builder.registerTypeAdapter(ChessGame.class, makeGameJSON());
-        var gson = builder.create();
         HashSet<Game_Record> tempHash = new HashSet<>();
 
+        // SQL instructions for finding all games
         String sqlReq = "SELECT * FROM game;";
         try (PreparedStatement req = connection.prepareStatement(sqlReq)) {
             results = req.executeQuery();
             while (results.next()) {
                     temp = new Game_Record(results.getInt("gameID"), results.getString("whiteUsername"),
                             results.getString("blackUsername"), results.getString("gameName"),
-                            gson.fromJson(results.getString("game"), ChessGame.class) );
+                            deserializeGame(results.getString("game")) );
                     tempHash.add(temp);
             }
         } catch (SQLException e) {
@@ -141,12 +152,14 @@ public class Game_DAO {
     }
 
     public int getGameSize() {
+        // Make sure database exists
         try{
             makeGameDB();
         } catch(SQLException e){
             throw new RuntimeException(e);
         }
 
+        // SQL instructions for getting a count of the games
         ResultSet results;
         String sqlReq = "SELECT COUNT(*) AS row_count FROM game;";
         int count=0;
@@ -162,6 +175,7 @@ public class Game_DAO {
     }
 
     public void joinGame(ChessGame.TeamColor color, Integer gameID, String username) {
+        // Make sure database exists
         try{
             makeGameDB();
         } catch(SQLException e){
@@ -172,6 +186,8 @@ public class Game_DAO {
             case BLACK -> "blackUsername";
             case WHITE -> "whiteUsername";
         };
+
+        // SQL instructions for adding a user to a game
         String sqlReq = "UPDATE game SET " + team + " = ? WHERE gameID = ?;";
         try(PreparedStatement req = connection.prepareStatement(sqlReq)){
             req.setString(1,username);
@@ -182,11 +198,36 @@ public class Game_DAO {
         }
     }
 
-    public static TypeAdapter<ChessGame> makeGameJSON(){
-        return new TypeAdapter<>() {
-            public void write(JsonWriter w) throws IOException {  }
-            public ChessGame read(JsonReader r){ return null; };
-        };
+    private ChessGame deserializeGame(String gameString) {
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.registerTypeAdapter(ChessGame.class, new ChessGameAdapter());
+        Gson gson = gsonBuilder.create();
+        return gson.fromJson(gameString, ChessGame.class);
     }
+
+    public static class ChessGameAdapter implements JsonDeserializer<ChessGame> {
+        public ChessGame deserialize(JsonElement el, Type type, JsonDeserializationContext ctx) throws JsonParseException {
+            return new Gson().fromJson(el, Game.class);
+        }
+    }
+
+//    public static class ChessPieceAdapter implements JsonDeserializer<ChessPiece> {
+//        public ChessPiece deserialize(JsonElement el, Type type, JsonDeserializationContext ctx) throws JsonParseException {
+//            return new Gson().fromJson(el, Piece.class);
+//        }
+//    }
+//
+//    public static class ChessBoardAdapter implements JsonDeserializer<ChessBoard> {
+//        public ChessBoard deserialize(JsonElement el, Type type, JsonDeserializationContext ctx) throws JsonParseException {
+//            return new Gson().fromJson(el, Board.class);
+//        }
+//    }
+
+//    public static TypeAdapter<ChessGame> ChessGameAdapter(){
+//        return new TypeAdapter<>() {
+//            public void write(JsonWriter w) throws IOException {  }
+//            public ChessGame read(JsonReader r){ return null; };
+//        };
+//    }
 
 }

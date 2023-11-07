@@ -8,6 +8,9 @@ import dataAccess.*;
 
 import java.sql.Connection;
 
+/**
+ * Handler for the Register application
+ */
 public class RegisterHand {
     public static String handle(spark.Request request, spark.Response response) {
         System.out.println("Register Handler");
@@ -16,6 +19,7 @@ public class RegisterHand {
         String temp = request.body();
         Register_Req requested = gson.fromJson(temp, Register_Req.class);
 
+        // Get database and connection to SQL
         Database db = new Database();
         try {
             Connection connection = db.getConnection();

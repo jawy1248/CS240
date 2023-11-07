@@ -8,6 +8,12 @@ import response.*;
 import java.sql.Connection;
 
 public class JoinGame {
+    /**
+     * Creates a join game response putting a player in a game
+     * @param request joinGame request
+     * @param connection SQL connection
+     * @return Response for HTTP
+     */
     public Response joinGame(JoinGame_Req request, Connection connection){
         Failure_Resp responseBad = new Failure_Resp();
         Success_Resp response = new Success_Resp();

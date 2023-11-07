@@ -10,6 +10,12 @@ import response.*;
 import java.sql.Connection;
 
 public class CreateGame {
+    /**
+     * Creates a createGame response creating a game
+     * @param request createGame request
+     * @param connection SQL connection
+     * @return Response for HTTP
+     */
     public Response createGame(CreateGame_Req request, Connection connection){
         // Initializing the response and gameID
         CreateGame_Resp response = new CreateGame_Resp();

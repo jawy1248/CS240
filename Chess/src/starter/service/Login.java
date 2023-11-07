@@ -6,6 +6,12 @@ import response.*;
 import java.sql.Connection;
 
 public class Login {
+    /**
+     * Creates a login response after logging someone in
+     * @param request login request
+     * @param connection SQL connection
+     * @return Response for HTTP
+     */
     public Response login(Login_Req request, Connection connection){
         RegisterLogin_Resp response = new RegisterLogin_Resp();
         response.setSuccess(false);
