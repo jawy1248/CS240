@@ -30,8 +30,7 @@ public class JoinGameTest {
             connection = db.getConnection();
 
             ClearApplication clearService = new ClearApplication();
-            Response clearResp = clearService.clearApp(connection);
-            Assertions.assertEquals(clearResp.getCode(), 200, "Database did not clear");
+            clearService.clearApp(connection);
 
             // Register a user
             Register_Req registerReq = new Register_Req(username, password, email);
@@ -65,8 +64,7 @@ public class JoinGameTest {
         try {
             connection = db.getConnection();
             ClearApplication clearService = new ClearApplication();
-            Response clearResp = clearService.clearApp(connection);
-            Assertions.assertEquals(clearResp.getCode(), 200, "Database did not clear");
+            clearService.clearApp(connection);
 
             // Register a user
             Register_Req registerReq = new Register_Req(username, password, email);

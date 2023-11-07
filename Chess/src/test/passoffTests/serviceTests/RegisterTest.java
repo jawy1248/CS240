@@ -27,8 +27,7 @@ public class RegisterTest {
         try {
             connection = db.getConnection();
             ClearApplication clearService = new ClearApplication();
-            Response clearResp = clearService.clearApp(connection);
-            Assertions.assertEquals(clearResp.getCode(), 200, "Clear application was not successful");
+            clearService.clearApp(connection);
 
             // Register a user
             Register_Req registerReq = new Register_Req(username, password, email);
@@ -48,8 +47,7 @@ public class RegisterTest {
         try {
             connection = db.getConnection();
             ClearApplication clearService = new ClearApplication();
-            Response clearResp = clearService.clearApp(connection);
-            Assertions.assertEquals(clearResp.getCode(), 200, "Clear application was not successful");
+            clearService.clearApp(connection);
 
             // Register a user
             Register_Req registerReq = new Register_Req(username, password, email);

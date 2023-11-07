@@ -10,4 +10,4 @@ import chess.ChessGame;
  * @param gameName String of the name of the game being played
  * @param game ChessGame object of the game that is being played
  */
-public record Game_Record(int gameID, String whiteUsername, String blackUsername, String gameName, ChessGame game) {}
+public record Game_Record(Integer gameID, String whiteUsername, String blackUsername, String gameName, ChessGame game) {}

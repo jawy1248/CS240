@@ -2,14 +2,8 @@ package dataAccess;
 
 import chess.ChessGame;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.HashSet;
-import java.util.UUID;
-
-import static chess.ChessGame.TeamColor.*;
 
 
 import com.google.gson.Gson;
@@ -22,7 +16,34 @@ public class Game_DAO {
 
     public Game_DAO(Connection connection) { this.connection = connection; }
 
+    private void makeGameDB() throws SQLException {
+        String sqlReq =
+                """
+                    CREATE TABLE  IF NOT EXISTS game (
+                        gameID INT NOT NULL AUTO_INCREMENT,
+                        whiteUsername VARCHAR(255) DEFAULT NULL,
+                        blackUsername VARCHAR(255) DEFAULT NULL,
+                        gameName VARCHAR(255) NOT NULL,
+                        game CLOB NOT NULL,
+                        PRIMARY KEY (gameID),
+                        INDEX (whiteUsername),
+                        INDEX (blackUsername)
+                    )
+                """;
+        try (PreparedStatement req = connection.prepareStatement(sqlReq)) {
+            req.executeUpdate();
+        } catch (SQLException e) {
+            throw new SQLException("Error occurred making AuthDB");
+        }
+    }
+
     public void clearGameDB() throws DataAccessException{
+        try{
+            makeGameDB();
+        } catch(SQLException e){
+            throw new DataAccessException(e.toString());
+        }
+
         String sqlReq = "DELETE from game;";
         try (PreparedStatement req = connection.prepareStatement(sqlReq)) {
             req.executeUpdate();
@@ -31,22 +52,37 @@ public class Game_DAO {
         }
     }
 
-    public void addGame(Game_Record game) throws DataAccessException{
+    public int addGame(Game_Record game) throws DataAccessException{
+        try{
+            makeGameDB();
+        } catch(SQLException e){
+            throw new DataAccessException(e.toString());
+        }
+
         Gson gson = new Gson();
-        String sqlReq = "INSERT INTO game (gameID, whiteUsername, blackUsername, gameName, game) VALUES(?,?,?,?,?);";
-        try(PreparedStatement req = connection.prepareStatement(sqlReq)){
-            req.setInt(1, game.gameID());
-            req.setString(2, game.whiteUsername());
-            req.setString(3, game.blackUsername());
-            req.setString(4, game.gameName());
-            req.setString(5, gson.toJson(game.game()));
+        String sqlReq = "INSERT INTO game (whiteUsername, blackUsername, gameName, game) VALUES(?,?,?,?);";
+        try(PreparedStatement req = connection.prepareStatement(sqlReq, Statement.RETURN_GENERATED_KEYS)){
+            req.setString(1, game.whiteUsername());
+            req.setString(2, game.blackUsername());
+            req.setString(3, game.gameName());
+            req.setString(4, gson.toJson(game.game()));
             req.executeUpdate();
+            try(ResultSet generatedKeys = req.getGeneratedKeys()){
+                generatedKeys.next();
+                return generatedKeys.getInt(1);
+            }
         } catch (SQLException e) {
             throw new DataAccessException("Error occurred adding game");
         }
     }
 
     public Game_Record findGame(int gameID){
+        try{
+            makeGameDB();
+        } catch(SQLException e){
+            throw new RuntimeException(e);
+        }
+
         Game_Record temp;
         ResultSet results;
         Gson gson = new Gson();
@@ -69,6 +105,12 @@ public class Game_DAO {
     }
 
     public HashSet<Game_Record> findAllGames() throws DataAccessException {
+        try{
+            makeGameDB();
+        } catch(SQLException e){
+            throw new DataAccessException(e.toString());
+        }
+
         Game_Record temp;
         ResultSet results;
         Gson gson = new Gson();
@@ -90,6 +132,12 @@ public class Game_DAO {
     }
 
     public int getGameSize() {
+        try{
+            makeGameDB();
+        } catch(SQLException e){
+            throw new RuntimeException(e);
+        }
+
         ResultSet results;
         String sqlReq = "SELECT COUNT(*) AS row_count FROM game;";
         int count=0;
@@ -105,6 +153,12 @@ public class Game_DAO {
     }
 
     public void joinGame(ChessGame.TeamColor color, Integer gameID, String username) {
+        try{
+            makeGameDB();
+        } catch(SQLException e){
+            throw new RuntimeException(e);
+        }
+
         String team = switch (color) {
             case BLACK -> "blackUsername";
             case WHITE -> "whiteUsername";

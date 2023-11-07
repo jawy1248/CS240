@@ -12,7 +12,30 @@ public class User_DAO {
     private final Connection connection;
     public User_DAO(Connection connection){ this.connection = connection; }
 
+    private void makeUserDB() throws SQLException {
+        String sqlReq =
+                """
+                    CREATE TABLE  IF NOT EXISTS user (
+                        username VARCHAR(255) NOT NULL,
+                        password VARCHAR(255) NOT NULL,
+                        email VARCHAR(255) NOT NULL,
+                        PRIMARY KEY (username)
+                    )
+                """;
+        try (PreparedStatement req = connection.prepareStatement(sqlReq)) {
+            req.executeUpdate();
+        } catch (SQLException e) {
+            throw new SQLException("Error occurred making AuthDB");
+        }
+    }
+
     public void clearUserDB() throws DataAccessException{
+        try{
+            makeUserDB();
+        } catch(SQLException e){
+            throw new DataAccessException(e.toString());
+        }
+
         String sqlReq = "DELETE from user;";
         try (PreparedStatement req = connection.prepareStatement(sqlReq)) {
             req.executeUpdate();
@@ -22,6 +45,12 @@ public class User_DAO {
     }
 
     public void addUser(User_Record user) throws DataAccessException{
+        try{
+            makeUserDB();
+        } catch(SQLException e){
+            throw new DataAccessException(e.toString());
+        }
+
         String sqlReq = "INSERT INTO user (username, password, email) VALUES(?,?,?);";
         try(PreparedStatement req = connection.prepareStatement(sqlReq)){
             req.setString(1, user.username());
@@ -35,6 +64,12 @@ public class User_DAO {
     }
 
     public User_Record findUser(String username) throws DataAccessException {
+        try{
+            makeUserDB();
+        } catch(SQLException e){
+            throw new DataAccessException(e.toString());
+        }
+
         User_Record temp;
         ResultSet results;
 
@@ -53,6 +88,12 @@ public class User_DAO {
     }
 
     public int getUserSize() {
+        try{
+            makeUserDB();
+        } catch(SQLException e){
+            throw new RuntimeException(e);
+        }
+
         ResultSet results;
         String sqlReq = "SELECT COUNT(*) AS row_count FROM user;";
         int count=0;

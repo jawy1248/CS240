@@ -13,9 +13,7 @@ public class ClearApplication {
      *
      * @return returns the response
      */
-    public Response clearApp(Connection connection){
-        Failure_Resp responseBad = new Failure_Resp();
-        Success_Resp response = new Success_Resp();
+    public String clearApp(Connection connection){
 
         try {
             // Getting all the databases
@@ -29,12 +27,10 @@ public class ClearApplication {
             gameDB.clearGameDB();
 
         } catch(DataAccessException e){
-            responseBad.setMessage("{}");
-            return responseBad;
+            throw new RuntimeException(e);
         }
 
-        // Success Response
-        response.setMessage("{}");
-        return response;
+        // Response
+        return "{}";
     }
 }

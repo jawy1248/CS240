@@ -13,7 +13,30 @@ public class Auth_DAO {
     private final Connection connection;
     public Auth_DAO(Connection connection){ this.connection = connection; }
 
+    private void makeAuthDB() throws SQLException {
+        String sqlReq =
+                """
+                    CREATE TABLE  IF NOT EXISTS authToken (
+                        authToken VARCHAR(255) NOT NULL,
+                        username VARCHAR(255) NOT NULL,
+                        PRIMARY KEY (authToken),
+                        INDEX (username)
+                    )
+                """;
+        try (PreparedStatement req = connection.prepareStatement(sqlReq)) {
+            req.executeUpdate();
+        } catch (SQLException e) {
+            throw new SQLException("Error occurred making AuthDB");
+        }
+    }
+
     public void clearAuthDB() throws DataAccessException{
+        try{
+            makeAuthDB();
+        } catch(SQLException e){
+            throw new DataAccessException(e.toString());
+        }
+
         String sqlReq = "DELETE from authToken;";
         try (PreparedStatement req = connection.prepareStatement(sqlReq)) {
             req.executeUpdate();
@@ -23,6 +46,12 @@ public class Auth_DAO {
     }
 
     public String makeAuth(String username) throws DataAccessException{
+        try{
+            makeAuthDB();
+        } catch(SQLException e){
+            throw new DataAccessException(e.toString());
+        }
+
         String authT = UUID.randomUUID().toString();
         String sqlReq = "INSERT INTO authToken (authToken, username) VALUES(?,?);";
         try(PreparedStatement req = connection.prepareStatement(sqlReq)){
@@ -37,6 +66,12 @@ public class Auth_DAO {
     }
 
     public void removeAuth(String authToken) throws DataAccessException {
+        try{
+            makeAuthDB();
+        } catch(SQLException e){
+            throw new DataAccessException(e.toString());
+        }
+
         String sqlReq = "DELETE FROM authToken WHERE authToken = ?;";
         try (PreparedStatement req = connection.prepareStatement(sqlReq)) {
             req.setString(1, authToken);
@@ -47,6 +82,12 @@ public class Auth_DAO {
     }
 
     public Auth_Record findAuthWithUsername(String username) throws DataAccessException{
+        try{
+            makeAuthDB();
+        } catch(SQLException e){
+            throw new DataAccessException(e.toString());
+        }
+
         Auth_Record temp;
         ResultSet results;
 
@@ -65,6 +106,12 @@ public class Auth_DAO {
     }
 
     public Auth_Record findAuth(String authToken){
+        try{
+            makeAuthDB();
+        } catch(SQLException e){
+            throw new RuntimeException(e);
+        }
+
         Auth_Record temp;
         ResultSet results;
 
@@ -84,6 +131,12 @@ public class Auth_DAO {
     }
 
     public int getAuthSize() {
+        try{
+            makeAuthDB();
+        } catch(SQLException e){
+            throw new RuntimeException(e);
+        }
+
         ResultSet results;
         String sqlReq = "SELECT COUNT(*) AS row_count FROM AuthToken;";
         int count=0;

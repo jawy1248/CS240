@@ -8,7 +8,6 @@ import dataAccess.*;
 import request.*;
 import response.*;
 import java.sql.Connection;
-import java.util.Random;
 
 public class CreateGame {
     public Response createGame(CreateGame_Req request, Connection connection){
@@ -17,8 +16,6 @@ public class CreateGame {
         response.setSuccess(false);
         String gameName = request.getGameName();
         String authToken = request.getAuthToken();
-        Random rand = new Random();
-        int gameID = rand.nextInt(999-1) + 1;
 
         try{
             // Getting the game and auth DB
@@ -46,8 +43,8 @@ public class CreateGame {
             game.setBoard(board);
 
             // Adding the board
-            Game_Record gameRecord = new Game_Record(gameID, null, null, gameName, game);
-            gameDB.addGame(gameRecord);
+            Game_Record gameRecord = new Game_Record(null, null, null, gameName, game);
+            int gameID = gameDB.addGame(gameRecord);
 
             // Response
             response.setGameID(gameID);
