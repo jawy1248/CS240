@@ -24,7 +24,7 @@ public class Game_DAO {
                         whiteUsername VARCHAR(255) DEFAULT NULL,
                         blackUsername VARCHAR(255) DEFAULT NULL,
                         gameName VARCHAR(255) NOT NULL,
-                        game CLOB NOT NULL,
+                        game TEXT NOT NULL,
                         PRIMARY KEY (gameID),
                         INDEX (whiteUsername),
                         INDEX (blackUsername)
@@ -33,7 +33,7 @@ public class Game_DAO {
         try (PreparedStatement req = connection.prepareStatement(sqlReq)) {
             req.executeUpdate();
         } catch (SQLException e) {
-            throw new SQLException("Error occurred making AuthDB");
+            throw new SQLException(e);
         }
     }
 
