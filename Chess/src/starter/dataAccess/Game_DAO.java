@@ -22,7 +22,7 @@ public class Game_DAO {
 
     public Game_DAO(Connection connection) { this.connection = connection; }
 
-    public void clearUserDB() throws DataAccessException{
+    public void clearGameDB() throws DataAccessException{
         String sqlReq = "DELETE from game;";
         try (PreparedStatement req = connection.prepareStatement(sqlReq)) {
             req.executeUpdate();
@@ -46,7 +46,7 @@ public class Game_DAO {
         }
     }
 
-    public Game_Record findGame(int gameID) throws DataAccessException{
+    public Game_Record findGame(int gameID){
         Game_Record temp;
         ResultSet results;
         Gson gson = new Gson();
@@ -64,7 +64,7 @@ public class Game_DAO {
                 return null;
 
         } catch (SQLException e) {
-            throw new DataAccessException("Error occurred accessing game");
+            throw new RuntimeException(e);
         }
     }
 
@@ -104,7 +104,7 @@ public class Game_DAO {
         }
     }
 
-    public void joinGame(ChessGame.TeamColor color, String gameID, String username) {
+    public void joinGame(ChessGame.TeamColor color, Integer gameID, String username) {
         String team = switch (color) {
             case BLACK -> "blackUsername";
             case WHITE -> "whiteUsername";
@@ -112,7 +112,7 @@ public class Game_DAO {
         String sqlReq = "UPDATE game SET " + team + " = ? WHERE gameID = ?;";
         try(PreparedStatement req = connection.prepareStatement(sqlReq)){
             req.setString(1,username);
-            req.setString(2,gameID);
+            req.setInt(2,gameID);
             req.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);

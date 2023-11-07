@@ -5,48 +5,65 @@ import static chess.ChessGame.TeamColor.*;
 import dataAccess.*;
 import request.*;
 import response.*;
+import java.sql.Connection;
 
 public class JoinGame {
-    public Response joinGame(JoinGame_Req request, Database db){
+    public Response joinGame(JoinGame_Req request, Connection connection){
         Failure_Resp responseBad = new Failure_Resp();
         Success_Resp response = new Success_Resp();
 
-        int gameID = request.getGameId();
-        ChessGame.TeamColor color = request.getPlayerColor();
-        String authToken = request.getAuthToken();
+        try{
+            // Getting the game and auth DB
+            Game_DAO gameDB = new Game_DAO(connection);
+            Auth_DAO authDB = new Auth_DAO(connection);
 
-        // Checking if the gameID is invalid
-        if( !db.findGameID(gameID) || !(color == null || color == WHITE || color == BLACK) ){
-            responseBad.setCode(400);
-            responseBad.setMessage("Error: bad request");
-            return responseBad;
-        }
+            // Getting values from request
+            int gameID = request.getGameId();
+            ChessGame.TeamColor color = request.getPlayerColor();
+            String authToken = request.getAuthToken();
 
-        // Checking if authToken is invalid
-        if(authToken == null || !db.findAuthToken(authToken)) {
-            responseBad.setCode(401);
-            responseBad.setMessage("Error: unauthorized");
-            return responseBad;
-        }
+            Game_Record game = gameDB.findGame(gameID);
+            Auth_Record auth = authDB.findAuth(authToken);
 
-        // Logic to join a game
-        String username = db.getUsername(authToken);
-        if(color != null) {
-            // Checking if color was already taken
-            boolean temp = db.findGameColor(color, gameID);
-            if(temp){
-                responseBad.setCode(403);
-                responseBad.setMessage("Error: already taken");
+            // Checking if any values are null
+            if(game == null || authToken == null) {
+                responseBad.setCode(400);
+                responseBad.setMessage("Error: bad request");
                 return responseBad;
-            }else
-                db.joinGame(color, gameID, username);
-        }
-        else
-            db.observeGame(gameID, username);
+            }
 
-        // Response
-        response.setCode(200);
-        response.setSuccess(true);
-        return response;
+            // Checking the user is authorized
+            if(auth == null) {
+                responseBad.setCode(401);
+                responseBad.setMessage("Error: unauthorized");
+                return responseBad;
+            }
+
+            // Sorting to color or observer and checking if someone is in it
+            if(color != null) {
+                 String temp = switch (color) {
+                    case WHITE -> game.whiteUsername();
+                    case BLACK -> game.whiteUsername();
+                };
+                if (temp != null) {
+                    responseBad.setCode(403);
+                    responseBad.setMessage("Error: already taken");
+                    return response;
+                }
+            } else {
+                response.setCode(200);
+                response.setSuccess(true);
+                return response;
+            }
+
+            // Join game and send success response
+            gameDB.joinGame(color, gameID, auth.username());
+            response.setCode(200);
+            response.setSuccess(true);
+            return response;
+
+        }catch(Exception e){
+            throw new RuntimeException(e);
+        }
     }
 }
