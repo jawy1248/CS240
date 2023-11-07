@@ -52,15 +52,11 @@ public class JoinGame {
                 }
             } else {
                 // If it is an observer, send success response
-                response.setCode(200);
-                response.setSuccess(true);
                 return response;
             }
 
             // Join game and send success response
             gameDB.joinGame(color, gameID, auth.username());
-            response.setCode(200);
-            response.setSuccess(true);
             return response;
 
         }catch(Exception e){

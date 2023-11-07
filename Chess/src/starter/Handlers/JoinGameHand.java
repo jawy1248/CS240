@@ -25,6 +25,7 @@ public class JoinGameHand {
             Response resp = service.joinGame(join, connection);
             response.status(resp.getCode());
 
+            db.returnConnection(connection);
             return gson.toJson(resp);
         } catch (Exception e){
             throw new RuntimeException(e);

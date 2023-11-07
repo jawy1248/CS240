@@ -21,6 +21,7 @@ public class ClearApplicationHand {
             Response resp = service.clearApp(connection);
             response.status(resp.getCode());
 
+            db.returnConnection(connection);
             return gson.toJson(resp);
         } catch (Exception e) {
             throw new RuntimeException(e);

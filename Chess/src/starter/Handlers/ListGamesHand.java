@@ -15,12 +15,13 @@ public class ListGamesHand {
         String authToken = request.headers("Authorization");
 
         Database db = new Database();
-        try{
+        try {
             Connection connection = db.getConnection();
             ListGames service = new ListGames();
             Response resp = service.listGames(authToken, connection);
             response.status(resp.getCode());
 
+            db.returnConnection(connection);
             return gson.toJson(resp);
         } catch (Exception e){
             throw new RuntimeException(e);

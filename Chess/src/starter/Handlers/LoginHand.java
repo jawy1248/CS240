@@ -23,6 +23,7 @@ public class LoginHand {
             Response resp = service.login(requested, connection);
             response.status(resp.getCode());
 
+            db.returnConnection(connection);
             return gson.toJson(resp);
         } catch (Exception e){
             throw new RuntimeException(e);

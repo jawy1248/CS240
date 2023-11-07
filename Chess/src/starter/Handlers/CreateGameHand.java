@@ -25,6 +25,7 @@ public class CreateGameHand {
             Response resp = service.createGame(gameName, connection);
             response.status(resp.getCode());
 
+            db.returnConnection(connection);
             return gson.toJson(resp);
         } catch (Exception e){
             throw new RuntimeException(e);

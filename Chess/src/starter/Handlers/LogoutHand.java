@@ -21,6 +21,7 @@ public class LogoutHand {
             Response resp = service.logout(authToken, connection);
             response.status(resp.getCode());
 
+            db.returnConnection(connection);
             return gson.toJson(resp);
         } catch (Exception e){
             throw new RuntimeException(e);

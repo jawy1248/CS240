@@ -31,8 +31,6 @@ public class Logout {
 
             // Logout and return success response
             authDB.removeAuth(authToken);
-            response.setCode(200);
-            response.setSuccess(true);
             return response;
 
         } catch (Exception e) {
