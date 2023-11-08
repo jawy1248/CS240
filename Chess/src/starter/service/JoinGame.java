@@ -1,7 +1,6 @@
 package service;
 
 import chess.ChessGame;
-import static chess.ChessGame.TeamColor.*;
 import dataAccess.*;
 import request.*;
 import response.*;
@@ -49,12 +48,12 @@ public class JoinGame {
             if(color != null) {
                  String temp = switch (color) {
                     case WHITE -> game.whiteUsername();
-                    case BLACK -> game.whiteUsername();
+                    case BLACK -> game.blackUsername();
                 };
                 if (temp != null) {
                     responseBad.setCode(403);
                     responseBad.setMessage("Error: already taken");
-                    return response;
+                    return responseBad;
                 }
             } else {
                 // If it is an observer, send success response

@@ -200,9 +200,10 @@ public class Game_DAO {
 
     private ChessGame deserializeGame(String gameString) {
         GsonBuilder gsonBuilder = new GsonBuilder();
-        gsonBuilder.registerTypeAdapter(ChessGame.class, new ChessGameAdapter());
+//        gsonBuilder.registerTypeAdapter(Game.class, new ChessGameAdapter());
+        gsonBuilder.registerTypeAdapter(ChessBoard.class, new ChessBoardAdapter());
         Gson gson = gsonBuilder.create();
-        return gson.fromJson(gameString, ChessGame.class);
+        return gson.fromJson(gameString, Game.class);
     }
 
     public static class ChessGameAdapter implements JsonDeserializer<ChessGame> {
@@ -211,23 +212,18 @@ public class Game_DAO {
         }
     }
 
-//    public static class ChessPieceAdapter implements JsonDeserializer<ChessPiece> {
-//        public ChessPiece deserialize(JsonElement el, Type type, JsonDeserializationContext ctx) throws JsonParseException {
-//            return new Gson().fromJson(el, Piece.class);
-//        }
-//    }
-//
-//    public static class ChessBoardAdapter implements JsonDeserializer<ChessBoard> {
-//        public ChessBoard deserialize(JsonElement el, Type type, JsonDeserializationContext ctx) throws JsonParseException {
-//            return new Gson().fromJson(el, Board.class);
-//        }
-//    }
+    public static class ChessBoardAdapter implements JsonDeserializer<ChessBoard> {
+        public ChessBoard deserialize(JsonElement el, Type type, JsonDeserializationContext ctx) throws JsonParseException {
+            GsonBuilder gsonBuilder = new GsonBuilder();
+            gsonBuilder.registerTypeAdapter(ChessPiece.class, new ChessPieceAdapter());
+            Gson gson = gsonBuilder.create();
+            return gson.fromJson(el, Board.class);
+        }
+    }
 
-//    public static TypeAdapter<ChessGame> ChessGameAdapter(){
-//        return new TypeAdapter<>() {
-//            public void write(JsonWriter w) throws IOException {  }
-//            public ChessGame read(JsonReader r){ return null; };
-//        };
-//    }
-
+    public static class ChessPieceAdapter implements JsonDeserializer<ChessPiece> {
+        public ChessPiece deserialize(JsonElement el, Type type, JsonDeserializationContext ctx) throws JsonParseException {
+            return new Gson().fromJson(el, Piece.class);
+        }
+    }
 }
