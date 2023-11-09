@@ -1,7 +1,5 @@
-package Handlers;
+package handlers;
 
-import com.google.gson.Gson;
-import response.Response;
 import service.ClearApplication;
 import dataAccess.Database;
 import java.sql.Connection;

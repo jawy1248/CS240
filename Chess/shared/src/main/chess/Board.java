@@ -1,6 +1,6 @@
 package chess;
 
-public class Board implements ChessBoard{
+public class Board implements ChessBoard {
 
     // Always use [row][col]
     private ChessPiece[][] board = new ChessPiece[9][9];

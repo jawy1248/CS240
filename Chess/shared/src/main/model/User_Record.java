@@ -1,4 +1,4 @@
-package dataAccess;
+package model;
 
 /**
  * Creates a User object

@@ -1,32 +1,30 @@
-package Handlers;
+package handlers;
 
 import com.google.gson.Gson;
 import dataAccess.Database;
-import request.JoinGame_Req;
+import request.Login_Req;
 import response.Response;
-import service.JoinGame;
+import service.Login;
 
 import java.sql.Connection;
 
 /**
- * Handler for the JoinGame application
+ * Handler for the LoginHandler
  */
-public class JoinGameHand {
+public class LoginHand {
     public static String handle(spark.Request request, spark.Response response) {
-        System.out.println("Join Game Handler");
+        System.out.println("Login Handler");
 
         Gson gson = new Gson();
         String temp = request.body();
-        JoinGame_Req join = gson.fromJson(temp, JoinGame_Req.class);
-        String authToken = request.headers("Authorization");
-        join.setAuthToken(authToken);
+        Login_Req requested = gson.fromJson(temp, Login_Req.class);
 
         // Get database and connection to SQL
         Database db = new Database();
         try {
             Connection connection = db.getConnection();
-            JoinGame service = new JoinGame();
-            Response resp = service.joinGame(join, connection);
+            Login service = new Login();
+            Response resp = service.login(requested, connection);
             response.status(resp.getCode());
 
             db.returnConnection(connection);

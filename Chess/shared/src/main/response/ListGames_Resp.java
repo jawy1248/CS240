@@ -1,6 +1,6 @@
 package response;
 
-import dataAccess.Game_Record;
+import model.Game_Record;
 import java.util.HashSet;
 
 /**

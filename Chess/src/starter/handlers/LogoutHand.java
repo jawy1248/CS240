@@ -1,30 +1,28 @@
-package Handlers;
+package handlers;
 
 import com.google.gson.Gson;
-import request.Register_Req;
+import dataAccess.Database;
 import response.Response;
-import service.Register;
-import dataAccess.*;
+import service.Logout;
 
 import java.sql.Connection;
 
 /**
- * Handler for the Register application
+ * Handler for the Logout applications
  */
-public class RegisterHand {
+public class LogoutHand {
     public static String handle(spark.Request request, spark.Response response) {
-        System.out.println("Register Handler");
+        System.out.println("Logout Handler");
 
         Gson gson = new Gson();
-        String temp = request.body();
-        Register_Req requested = gson.fromJson(temp, Register_Req.class);
+        String authToken = request.headers("Authorization");
 
         // Get database and connection to SQL
         Database db = new Database();
         try {
             Connection connection = db.getConnection();
-            Register service = new Register();
-            Response resp = service.register(requested, connection);
+            Logout service = new Logout();
+            Response resp = service.logout(authToken, connection);
             response.status(resp.getCode());
 
             db.returnConnection(connection);

@@ -2,6 +2,8 @@ package service;
 
 import chess.ChessGame;
 import dataAccess.*;
+import model.Auth_Record;
+import model.Game_Record;
 import request.*;
 import response.*;
 import java.sql.Connection;

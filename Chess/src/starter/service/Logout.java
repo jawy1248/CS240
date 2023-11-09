@@ -1,6 +1,7 @@
 package service;
 
 import dataAccess.*;
+import model.Auth_Record;
 import response.*;
 import java.sql.Connection;
 

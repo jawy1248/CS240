@@ -1,4 +1,4 @@
-package dataAccess;
+package model;
 
 import chess.ChessGame;
 

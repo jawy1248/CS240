@@ -1,18 +1,18 @@
-package Handlers;
+package handlers;
 
 import com.google.gson.Gson;
 import dataAccess.Database;
 import response.Response;
-import service.Logout;
+import service.ListGames;
 
 import java.sql.Connection;
 
 /**
- * Handler for the Logout applications
+ * Handler for the ListGames application
  */
-public class LogoutHand {
+public class ListGamesHand {
     public static String handle(spark.Request request, spark.Response response) {
-        System.out.println("Logout Handler");
+        System.out.println("List Games Handler");
 
         Gson gson = new Gson();
         String authToken = request.headers("Authorization");
@@ -21,8 +21,8 @@ public class LogoutHand {
         Database db = new Database();
         try {
             Connection connection = db.getConnection();
-            Logout service = new Logout();
-            Response resp = service.logout(authToken, connection);
+            ListGames service = new ListGames();
+            Response resp = service.listGames(authToken, connection);
             response.status(resp.getCode());
 
             db.returnConnection(connection);
@@ -30,5 +30,6 @@ public class LogoutHand {
         } catch (Exception e){
             throw new RuntimeException(e);
         }
+
     }
 }

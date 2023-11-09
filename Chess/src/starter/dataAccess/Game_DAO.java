@@ -2,6 +2,10 @@ package dataAccess;
 
 import chess.*;
 import com.google.gson.*;
+import chess.Board;
+import chess.Game;
+import chess.Piece;
+import model.Game_Record;
 
 import java.sql.*;
 import java.util.HashSet;

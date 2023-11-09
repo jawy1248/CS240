@@ -5,6 +5,7 @@ import chess.ChessBoard;
 import chess.ChessGame;
 import chess.Game;
 import dataAccess.*;
+import model.Game_Record;
 import request.*;
 import response.*;
 import java.sql.Connection;

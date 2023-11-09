@@ -1,28 +1,30 @@
-package Handlers;
+package handlers;
 
 import com.google.gson.Gson;
-import dataAccess.Database;
+import request.Register_Req;
 import response.Response;
-import service.ListGames;
+import service.Register;
+import dataAccess.*;
 
 import java.sql.Connection;
 
 /**
- * Handler for the ListGames application
+ * Handler for the Register application
  */
-public class ListGamesHand {
+public class RegisterHand {
     public static String handle(spark.Request request, spark.Response response) {
-        System.out.println("List Games Handler");
+        System.out.println("Register Handler");
 
         Gson gson = new Gson();
-        String authToken = request.headers("Authorization");
+        String temp = request.body();
+        Register_Req requested = gson.fromJson(temp, Register_Req.class);
 
         // Get database and connection to SQL
         Database db = new Database();
         try {
             Connection connection = db.getConnection();
-            ListGames service = new ListGames();
-            Response resp = service.listGames(authToken, connection);
+            Register service = new Register();
+            Response resp = service.register(requested, connection);
             response.status(resp.getCode());
 
             db.returnConnection(connection);
@@ -30,6 +32,5 @@ public class ListGamesHand {
         } catch (Exception e){
             throw new RuntimeException(e);
         }
-
     }
 }
