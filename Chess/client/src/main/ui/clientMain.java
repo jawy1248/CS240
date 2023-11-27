@@ -17,9 +17,10 @@ public class clientMain {
         while(control){
             // Read the line and send it to the client
             String temp = scanner.nextLine();
+            temp = temp.toLowerCase();
             System.out.println(client.command(temp));
             // Exit program if user says "Quit"
-            if(temp.equals("Quit"))
+            if(temp.equals("quit"))
                 control = false;
         }
     }
