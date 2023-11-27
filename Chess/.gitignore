@@ -1,6 +1,6 @@
 ### IntelliJ IDEA ###
 out/
-!**/src/main/**/out/
+!**/src/clientMain/**/out/
 !**/src/test/**/out/
 
 ### Jar Files ###
@@ -15,7 +15,7 @@ libs
 .springBeans
 .sts4-cache
 bin/
-!**/src/main/**/bin/
+!**/src/clientMain/**/bin/
 !**/src/test/**/bin/
 
 ### NetBeans ###
