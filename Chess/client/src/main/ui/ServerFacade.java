@@ -34,11 +34,13 @@ public class ServerFacade {
         return null;
     }
 
-    public Response join(String gameID, String color){
+    public Response join(String tempGameID, String color){
+        Integer gameID = Integer.parseInt(tempGameID);
         return null;
     }
 
-    public Response watch(String gameID){
+    public Response watch(String tempGameID){
+        Integer gameID = Integer.parseInt(tempGameID);
         return null;
     }
 
