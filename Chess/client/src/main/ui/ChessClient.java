@@ -39,7 +39,7 @@ public class ChessClient {
                         SET_TEXT_COLOR_GREEN + "QUIT" + SET_TEXT_COLOR_WHITE + " - Exits the chess program\n" +
                         SET_TEXT_COLOR_GREEN + "LOGIN" + SET_TEXT_COLOR_BLUE + " <USERNAME> <PASSWORD>" + SET_TEXT_COLOR_WHITE + " - Login to play\n" +
                         SET_TEXT_COLOR_GREEN + "REGISTER" + SET_TEXT_COLOR_BLUE + " <USERNAME> <PASSWORD> <EMAIL>" + SET_TEXT_COLOR_WHITE + " - Register an account\n");
-                return "[PRE-LOG IN]";
+                return "[LOGGED_OUT]";
             }
             if (commandIN.contains("quit")) {
                 System.out.println("Exiting the program");
@@ -48,12 +48,12 @@ public class ChessClient {
             if (commandIN.contains("register")) {
                 String temp = register(length);
                 System.out.println(temp);
-                return "[LOGGED IN]";
+                return "[LOGGED_IN]";
             }
             if (commandIN.contains("login")) {
                 String temp = login(length);
                 System.out.println(temp);
-                return "[LOGGED IN]";
+                return "[LOGGED_IN]";
             }
         }else{
             // logged in
@@ -67,35 +67,46 @@ public class ChessClient {
                             SET_TEXT_COLOR_GREEN + "LIST" + SET_TEXT_COLOR_WHITE + " - Lists all ongoing chess games\n" +
                             SET_TEXT_COLOR_GREEN + "JOIN" + SET_TEXT_COLOR_BLUE + " <gameID> <WHITE | BLACK>" + SET_TEXT_COLOR_WHITE + " - Joins a game as either white or black\n" +
                             SET_TEXT_COLOR_GREEN + "WATCH" + SET_TEXT_COLOR_BLUE + " <gameID>" + SET_TEXT_COLOR_WHITE + " - Joins a game as an observer\n");
-                    return "[LOGGED IN]";
+                    return "[LOGGED_IN]";
                 }
-                if (commandIN.contains("quit")) {
-                    System.out.println("Exiting the program");
-                    return "";
-                }
+                if (commandIN.contains("quit"))
+                    return "Exiting the program";
+
                 if (commandIN.contains("logout")) {
                     String temp = logout(length);
                     System.out.println(temp);
-                    return "[PRE-LOG IN]";
+
+                    if(temp.equals("Failed to log out"))
+                        return "[LOGGED_IN]";
+
+                    return "[LOGGED_OUT]";
                 }
                 if (commandIN.contains("create")) {
                     String temp = create(length);
                     System.out.println(temp);
-                    return "[LOGGED IN]";
+                    return "[LOGGED_IN]";
                 }
                 if (commandIN.contains("list")) {
                     String temp = list(length);
                     System.out.println(temp);
-                    return "[LOGGED IN]";
+                    return "[LOGGED_IN]";
                 }
                 if (commandIN.contains("join")) {
                     String temp = join(length);
                     System.out.println(temp);
+
+                    if(temp.equals("Failed to join"))
+                        return "[LOGGED_IN]";
+
                     return "[PLAYING]";
                 }
                 if (commandIN.contains("watch")) {
                     String temp = watch(length);
                     System.out.println(temp);
+
+                    if(temp.equals("Failed to watch"))
+                        return "[LOGGED_IN]";
+
                     return "[WATCHING]";
                 }
             } else {
@@ -122,7 +133,7 @@ public class ChessClient {
 //        if(resp.getCode() == 200)
 //            return "Successfully cleared all data";
 //
-//        return "Failed to clear data";
+//        return "Failed to clear";
 //    }
     // Register
     public String register(String[] com) throws IOException {
@@ -184,7 +195,7 @@ public class ChessClient {
         if(resp.getCode() == 200)
             return "Successfully created game with gameID: " + resp.getGameID();
 
-        return "Failed to create game";
+        return "Failed to create";
     }
 
     // List Games
@@ -217,7 +228,7 @@ public class ChessClient {
             return "Successfully joined game " + com[1] + " as player: " + com[2];
         }
 
-        return "Failed to join requested game";
+        return "Failed to join";
     }
 
     // Join Observer
@@ -237,8 +248,6 @@ public class ChessClient {
             return "Successfully joined game " + com[1] + " as an observer";
         }
 
-        return "Failed to watch requested game";
+        return "Failed to watch";
     }
-
-
 }

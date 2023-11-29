@@ -14,7 +14,7 @@ public class clientMain {
         // Set up  a control variables to end loop when user quits
         boolean control = true;
         // Until "Quit" occurs, keep running program
-        String status = "[PRE-LOG IN]";
+        String status = "[LOGGED_OUT]";
         while(control){
             System.out.print(SET_TEXT_COLOR_WHITE + status + " >>> " + SET_TEXT_COLOR_GREEN);
             // Read the line and send it to the client

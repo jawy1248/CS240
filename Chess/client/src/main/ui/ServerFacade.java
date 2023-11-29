@@ -31,7 +31,6 @@ public class ServerFacade {
         if(code == 200)
             return new Success_Resp();
         return new Failure_Resp();
-
     }
 
     public RegisterLogin_Resp register(String username, String password, String email) throws IOException{

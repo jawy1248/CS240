@@ -21,6 +21,7 @@ public class PrintBoard {
     public void printBlack(){
         var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
         out.print(ERASE_SCREEN);
+        System.out.println("Black:");
 
         System.out.print(SET_TEXT_COLOR_WHITE);
         System.out.print(SET_BG_COLOR_LIGHT_GREY);
@@ -79,7 +80,7 @@ public class PrintBoard {
     }
 
     public void printWhite(){
-        var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
+        System.out.println("White:");
 
         System.out.print(SET_TEXT_COLOR_WHITE);
         System.out.print(SET_BG_COLOR_LIGHT_GREY);
