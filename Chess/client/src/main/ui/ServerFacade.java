@@ -1,7 +1,8 @@
 package ui;
 
-import chess.ChessGame;
-import com.google.gson.Gson;
+import chess.*;
+import com.google.gson.*;
+import model.Game_Record;
 import request.*;
 import response.*;
 
@@ -9,8 +10,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Iterator;
 
 public class ServerFacade {
     public String serverURL;
@@ -156,7 +159,7 @@ public class ServerFacade {
 
         try(InputStream respBody = connection.getInputStream()){
             InputStreamReader reader = new InputStreamReader(respBody);
-            return new Gson().fromJson(reader, ListGames_Resp.class);
+            return deserializeGame(reader);
         }
     }
 
@@ -196,5 +199,37 @@ public class ServerFacade {
 
     public Response watch(String tempGameID) throws IOException{
         return join(tempGameID, " ");
+    }
+
+    private ListGames_Resp deserializeGame(InputStreamReader gameString) {
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.registerTypeAdapter(ChessBoard.class, new ChessBoardAdapter());
+        gsonBuilder.registerTypeAdapter(ChessGame.class, new ChessGameAdapter());
+        Gson gson = gsonBuilder.create();
+        return gson.fromJson(gameString, ListGames_Resp.class);
+    }
+
+    public static class ChessGameAdapter implements JsonDeserializer<ChessGame> {
+        public ChessGame deserialize(JsonElement el, Type type, JsonDeserializationContext ctx) throws JsonParseException {
+            GsonBuilder gsonBuilder = new GsonBuilder();
+            gsonBuilder.registerTypeAdapter(ChessBoard.class, new ChessBoardAdapter());
+            Gson gson = gsonBuilder.create();
+            return gson.fromJson(el, Game.class);
+        }
+    }
+
+    public static class ChessBoardAdapter implements JsonDeserializer<ChessBoard> {
+        public ChessBoard deserialize(JsonElement el, Type type, JsonDeserializationContext ctx) throws JsonParseException {
+            GsonBuilder gsonBuilder = new GsonBuilder();
+            gsonBuilder.registerTypeAdapter(ChessPiece.class, new ChessPieceAdapter());
+            Gson gson = gsonBuilder.create();
+            return gson.fromJson(el, Board.class);
+        }
+    }
+
+    public static class ChessPieceAdapter implements JsonDeserializer<ChessPiece> {
+        public ChessPiece deserialize(JsonElement el, Type type, JsonDeserializationContext ctx) throws JsonParseException {
+            return new Gson().fromJson(el, Piece.class);
+        }
     }
 }

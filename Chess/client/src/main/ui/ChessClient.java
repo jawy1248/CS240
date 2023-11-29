@@ -2,9 +2,11 @@ package ui;
 
 import chess.*;
 import com.google.gson.Gson;
+import model.Game_Record;
 import response.*;
 
 import java.io.IOException;
+import java.util.Iterator;
 
 import static ui.EscapeSequences.*;
 
@@ -204,10 +206,30 @@ public class ChessClient {
             return "ERROR - To list games, do NOT provide any additional arguments";
 
         ListGames_Resp resp = serverFacade.list();
-        if(resp.getCode() == 200)
-            return "List of game:\n" + new Gson().toJson(resp);
+        if(resp.getCode() == 200) {
+            Iterator<Game_Record> iter = resp.getGames().iterator();
+            StringBuilder builder = new StringBuilder();
+            int i = 1;
+            while(iter.hasNext()){
+                Game_Record temp = iter.next();
+                String whiteTemp = SET_TEXT_COLOR_BLUE + temp.whiteUsername();
+                String blackTemp = SET_TEXT_COLOR_BLUE + temp.blackUsername();
 
-        return null;
+                if(temp.whiteUsername() == null)
+                    whiteTemp = SET_TEXT_COLOR_RED + "EMPTY";
+
+                if(temp.blackUsername() == null)
+                    blackTemp = SET_TEXT_COLOR_RED + "EMPTY";
+
+                builder.append(i + ". NAME: " + SET_TEXT_COLOR_BLUE + temp.gameName() + SET_TEXT_COLOR_WHITE +
+                        ", ID: " + SET_TEXT_COLOR_BLUE + temp.gameID() + SET_TEXT_COLOR_WHITE +
+                        ", WhiteUser: " + whiteTemp + SET_TEXT_COLOR_WHITE +
+                        ", BlackUser: " + blackTemp + SET_TEXT_COLOR_WHITE + "\n");
+                i++;
+            }
+            return builder.toString();
+        }
+        return "Failed to list";
     }
 
     // Join Game
