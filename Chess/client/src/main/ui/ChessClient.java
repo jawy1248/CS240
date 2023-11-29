@@ -81,12 +81,12 @@ public class ChessClient {
                 if (commandIN.contains("create")) {
                     String temp = create(length);
                     System.out.println(temp);
-                    return "[PRE-LOG IN]";
+                    return "[LOGGED IN]";
                 }
                 if (commandIN.contains("list")) {
                     String temp = list(length);
                     System.out.println(temp);
-                    return "[PRE-LOG IN]";
+                    return "[LOGGED IN]";
                 }
                 if (commandIN.contains("join")) {
                     String temp = join(length);
@@ -212,6 +212,8 @@ public class ChessClient {
             color = com[2];
 
             board.printBlack();
+            System.out.println();
+            board.printWhite();
             return "Successfully joined game " + com[1] + " as player: " + com[2];
         }
 
@@ -228,6 +230,10 @@ public class ChessClient {
 //            joined = true;
 //            playing = false;
             gameID = com[1];
+
+            board.printBlack();
+            System.out.println();
+            board.printWhite();
             return "Successfully joined game " + com[1] + " as an observer";
         }
 

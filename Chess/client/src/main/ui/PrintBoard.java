@@ -24,28 +24,27 @@ public class PrintBoard {
 
         System.out.print(SET_TEXT_COLOR_WHITE);
         System.out.print(SET_BG_COLOR_LIGHT_GREY);
-        System.out.print("       ");
+        System.out.print("    ");
         for(int i=0; i<8; i++){
             System.out.print(SET_BG_COLOR_LIGHT_GREY);
-            char x = (char) ('a' + i);
-            System.out.print(x + " ");
+            char x = (char) ('h' - i);
+            System.out.print(x + "  ");
         }
-        System.out.print(SET_BG_COLOR_LIGHT_GREY);
-        System.out.print("   ");
+        System.out.print("  ");
         System.out.print(SET_BG_COLOR_DARK_GREY);
         System.out.println();
 
         for(int i=0; i<8; i++){
             for(int j=0; j<8; j++){
-                boolean white = ( (i + j) % 2 == 0 );
+                boolean black = ( (i + j) % 2 == 0 );
                 if(j == 0){
                     System.out.print(SET_BG_COLOR_LIGHT_GREY);
                     System.out.print(" ");
                     System.out.print(1+i);
                     System.out.print(" ");
                 }
-                if(!white){
-                    System.out.print(SET_BG_COLOR_MAGENTA);
+                if(black){
+                    System.out.print(SET_BG_COLOR_DARK_GREEN);
                     if(!board[i][j].equals(EMPTY))
                         System.out.print(SET_TEXT_COLOR_WHITE);
                     System.out.print(board[i][j]);
@@ -67,14 +66,73 @@ public class PrintBoard {
             System.out.println();
         }
         System.out.print(SET_BG_COLOR_LIGHT_GREY);
-        System.out.print("       ");
+        System.out.print("    ");
+        for(int i=0; i<8; i++){
+            System.out.print(SET_BG_COLOR_LIGHT_GREY);
+            char x = (char) ('h' - i);
+            System.out.print(x + "  ");
+        }
+        System.out.print(SET_BG_COLOR_LIGHT_GREY);
+        System.out.print("  ");
+        System.out.print(SET_BG_COLOR_DARK_GREY);
+        System.out.println();
+    }
+
+    public void printWhite(){
+        var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
+
+        System.out.print(SET_TEXT_COLOR_WHITE);
+        System.out.print(SET_BG_COLOR_LIGHT_GREY);
+        System.out.print("    ");
         for(int i=0; i<8; i++){
             System.out.print(SET_BG_COLOR_LIGHT_GREY);
             char x = (char) ('a' + i);
-            System.out.print(x + " ");
+            System.out.print(x + "  ");
+        }
+        System.out.print("  ");
+        System.out.print(SET_BG_COLOR_DARK_GREY);
+        System.out.println();
+
+        for(int i=0; i<8; i++){
+            for(int j=0; j<8; j++){
+                boolean white = ( (i + j) % 2 == 0 );
+                if(j == 0){
+                    System.out.print(SET_BG_COLOR_LIGHT_GREY);
+                    System.out.print(" ");
+                    System.out.print(8-i);
+                    System.out.print(" ");
+                }
+                if(white){
+                    System.out.print(SET_BG_COLOR_DARK_GREEN);
+                    if(!board[7-i][7-j].equals(EMPTY))
+                        System.out.print(SET_TEXT_COLOR_WHITE);
+                    System.out.print(board[7-i][7-j]);
+                } else {
+                    System.out.print(SET_BG_COLOR_DARK_GREY);
+                    if(!board[7-i][7-j].equals(EMPTY))
+                        System.out.print(SET_TEXT_COLOR_WHITE);
+                    System.out.print(board[7-i][7-j]);
+                }
+                System.out.print(SET_TEXT_COLOR_WHITE);
+                if(j==7){
+                    System.out.print(SET_BG_COLOR_LIGHT_GREY);
+                    System.out.print(" ");
+                    System.out.print(8-i);
+                    System.out.print(" ");
+                }
+            }
+            System.out.print(SET_BG_COLOR_DARK_GREY);
+            System.out.println();
         }
         System.out.print(SET_BG_COLOR_LIGHT_GREY);
-        System.out.print("   ");
+        System.out.print("    ");
+        for(int i=0; i<8; i++){
+            System.out.print(SET_BG_COLOR_LIGHT_GREY);
+            char x = (char) ('a' + i);
+            System.out.print(x + "  ");
+        }
+        System.out.print(SET_BG_COLOR_LIGHT_GREY);
+        System.out.print("  ");
         System.out.print(SET_BG_COLOR_DARK_GREY);
         System.out.println();
     }

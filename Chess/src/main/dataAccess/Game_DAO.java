@@ -204,7 +204,6 @@ public class Game_DAO {
 
     private ChessGame deserializeGame(String gameString) {
         GsonBuilder gsonBuilder = new GsonBuilder();
-//        gsonBuilder.registerTypeAdapter(Game.class, new ChessGameAdapter());
         gsonBuilder.registerTypeAdapter(ChessBoard.class, new ChessBoardAdapter());
         Gson gson = gsonBuilder.create();
         return gson.fromJson(gameString, Game.class);

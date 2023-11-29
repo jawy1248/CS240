@@ -1,9 +1,8 @@
 package ui;
 
+import chess.ChessGame;
 import com.google.gson.Gson;
-import request.CreateGame_Req;
-import request.Login_Req;
-import request.Register_Req;
+import request.*;
 import response.*;
 
 import java.io.IOException;
@@ -162,14 +161,41 @@ public class ServerFacade {
         }
     }
 
-    public Response join(String tempGameID, String color) throws IOException{
+    public Response join(String tempGameID, String tempColor) throws IOException{
+        ChessGame.TeamColor color;
+        tempColor = tempColor.toUpperCase();
+        if(tempColor.equals("WHITE"))
+            color = ChessGame.TeamColor.WHITE;
+        else if(tempColor.equals("BLACK"))
+            color = ChessGame.TeamColor.BLACK;
+        else
+            color = null;
+
         Integer gameID = Integer.parseInt(tempGameID);
-        return null;
+
+        // Connect to server
+        URL url = new URL(serverURL + "/game");
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestMethod("PUT");
+        connection.setDoOutput(true);
+        connection.setRequestProperty("Authorization", authToken);
+
+        JoinGame_Req req = new JoinGame_Req(color, gameID);
+        String jsonReq = new Gson().toJson(req);
+
+        try(OutputStream reqBody = connection.getOutputStream()){
+            reqBody.write(jsonReq.getBytes());
+        }
+
+        connection.connect();
+
+        int code = connection.getResponseCode();
+        if(code == 200)
+            return new Success_Resp();
+        return new Failure_Resp();
     }
 
     public Response watch(String tempGameID) throws IOException{
-        Integer gameID = Integer.parseInt(tempGameID);
-        return null;
+        return join(tempGameID, " ");
     }
-
 }
