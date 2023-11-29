@@ -2,17 +2,10 @@ package ui;
 
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
-import java.util.Random;
 
 import static ui.EscapeSequences.*;
 
 public class PrintBoard {
-//    private static final int BOARD_SIZE = 8;
-//    private static final int SQUARE_SIZE = 1;
-//    private static final int LINE_SIZE = 1;
-
-    private static Random rand = new Random();
-
     // Set up the initial board
     public static String[][] board = {
             {WHITE_ROOK, WHITE_KNIGHT, WHITE_BISHOP, WHITE_KING, WHITE_QUEEN, WHITE_BISHOP, WHITE_KNIGHT, WHITE_ROOK},
