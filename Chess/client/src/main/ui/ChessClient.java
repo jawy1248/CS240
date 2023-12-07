@@ -15,7 +15,6 @@ import static ui.EscapeSequences.*;
 public class ChessClient {
     public ServerFacade serverFacade;
     public webSocketClient ws;
-    NotificationHandler handler;
     public boolean loggedIN = false;
     public boolean joined = false;
     public boolean playing = false;
@@ -343,28 +342,51 @@ public class ChessClient {
     }
 
     // Makes a move
-    public String move(String[] com) throws IOException{
+    public String move(String[] com) throws Exception{
         if(com.length != 3)
             return "ERROR - To move, provide start position and end position";
+
+        String pos1Str = com[1];
+        String pos2Str = com[2];
+
+        if(pos1Str.length() != 2 || pos2Str.length() != 2)
+            return "ERROR - Incorrect position format";
+
+        ChessPosition posStart = getPos(pos1Str);
+        ChessPosition posEnd = getPos(pos2Str);
+
+        Move move = new Move(posStart, posEnd, null);
+        if(!chessGame.validMoves(posStart).contains(move))
+            return "Invalid Move";
+        if(chessGame.validMoves(posStart).isEmpty())
+            return "In Checkmate";
+        chessGame.makeMove(move);
+        MakeMove comm = new MakeMove(gameID, authToken, username, move);
+        ws.send(comm);
 
         return null;
     }
 
     // Leaves a game
     public void leave() throws Exception{
+        playing = false;
+
         Leave com = new Leave(UserGameCommand.CommandType.LEAVE, authToken, gameID, username);
         ws.send(com);
     }
 
     // Resigns from a game
     public void resign() throws Exception {
+        playing = false;
+        joined = false;
+
         Resign com = new Resign(UserGameCommand.CommandType.RESIGN,authToken,gameID,username);
         ws.send(com);
     }
 
     // Gets position from string
     public ChessPosition getPos(String pos){
-        int row = (pos.charAt(0) -'a') + 1;
+        int row = (pos.charAt(0) - 'a') + 1;
         int col =Integer.parseInt(String.valueOf(pos.charAt(1)));
         return new Position(row, col);
     }
