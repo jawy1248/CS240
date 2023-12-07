@@ -2,6 +2,7 @@ package ui;
 
 import chess.*;
 import model.Game_Record;
+import model.User_Record;
 import response.*;
 import webSocketMessages.userCommands.*;
 
@@ -12,7 +13,7 @@ import java.util.Iterator;
 import static ui.EscapeSequences.*;
 
 
-public class ChessClient {
+public class ChessClient implements NotificationHandler {
     public ServerFacade serverFacade;
     public webSocketClient ws;
     public boolean loggedIN = false;
@@ -24,9 +25,13 @@ public class ChessClient {
     public PrintBoard board = new PrintBoard();
     public ChessGame chessGame;
     public String color;
+    NotificationHandler handler;
+    User_Record user;
+    ChessGame.TeamColor teamColor = null;
 
     public ChessClient() throws Exception {
         serverFacade = new ServerFacade("http://localhost:8080");
+        ws = new webSocketClient("ws://localhost:8080/connect", this);
     }
 
     // -------------------- Main Method --------------------
@@ -282,7 +287,7 @@ public class ChessClient {
     }
 
     // Join Game
-    public String join(String[] com) throws IOException{
+    public String join(String[] com) throws Exception{
         if(com.length != 3)
             return "ERROR - To join game, provide only gameID and team color";
 
@@ -299,6 +304,9 @@ public class ChessClient {
                 board.printBlack();
             }
 
+            JoinPlayer comm = new JoinPlayer(com[1],teamColor,username, authToken);
+            ws.send(comm);
+
             return "Successfully joined game " + com[1] + " as player: " + com[2];
         }
 
@@ -306,7 +314,7 @@ public class ChessClient {
     }
 
     // Join Observer
-    public String watch(String[] com) throws IOException{
+    public String watch(String[] com) throws Exception{
         if(com.length != 2)
             return "ERROR - To watch game, provide only gameID";
 
@@ -317,6 +325,9 @@ public class ChessClient {
             gameID = com[1];
 
             board.printWhite();
+
+            JoinObserver comm = new JoinObserver(UserGameCommand.CommandType.JOIN_OBSERVER, authToken, gameID, username);
+            ws.send(comm);
 
             return "Successfully joined game " + com[1] + " as an observer";
         }
@@ -361,6 +372,7 @@ public class ChessClient {
         if(chessGame.validMoves(posStart).isEmpty())
             return "In Checkmate";
         chessGame.makeMove(move);
+
         MakeMove comm = new MakeMove(gameID, authToken, username, move);
         ws.send(comm);
 
@@ -379,6 +391,8 @@ public class ChessClient {
     public void resign() throws Exception {
         playing = false;
         joined = false;
+        gameID = null;
+        color = null;
 
         Resign com = new Resign(UserGameCommand.CommandType.RESIGN,authToken,gameID,username);
         ws.send(com);
@@ -390,4 +404,28 @@ public class ChessClient {
         int col =Integer.parseInt(String.valueOf(pos.charAt(1)));
         return new Position(row, col);
     }
+
+    @Override
+    public void updateBoard(ChessGame game) {
+        this.chessGame = game;
+        board.updateUIBoard(game);
+        if (color == null){
+            board.printWhite();
+        }else if (color.equalsIgnoreCase("black")) {
+            board.printBlack();
+        }else{
+            board.printWhite();
+        }
+
+    }
+
+    @Override
+    public void message(String message) {
+        if (message != null){
+            System.out.println(message);
+        }
+    }
+
+    @Override
+    public void error(String error) {}
 }

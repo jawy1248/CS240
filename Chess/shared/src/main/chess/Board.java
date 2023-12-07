@@ -23,6 +23,8 @@ public class Board implements ChessBoard {
         return remPiece;
     }
 
+    public ChessPiece[][] getBoard(){ return board; }
+
     @Override
     public ChessPiece getPiece(ChessPosition position) {
         int row = position.getRow();

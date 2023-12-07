@@ -345,4 +345,52 @@ public class PrintBoard {
         System.out.println();
     }
 
+    public void updateUIBoard(ChessGame game){
+        Board boardNEW = (Board) game.getBoard();
+        for(int i =1; i<9;i++){
+            for(int j =1; j<9; j++){
+                if (boardNEW.getBoard()[i][j] == null){
+                    board[j-1][i-1] = EMPTY;
+                }
+                else if (boardNEW.getBoard()[i][j].getPieceType() == ChessPiece.PieceType.PAWN && boardNEW.getBoard()[i][j].getTeamColor() == ChessGame.TeamColor.WHITE ){
+                    board[j-1][i-1] = WHITE_PAWN;
+                }
+                else if (boardNEW.getBoard()[i][j].getPieceType() == ChessPiece.PieceType.KNIGHT && boardNEW.getBoard()[i][j].getTeamColor() == ChessGame.TeamColor.WHITE ){
+                    board[j-1][i-1] = WHITE_KNIGHT;
+                }
+                else if (boardNEW.getBoard()[i][j].getPieceType() == ChessPiece.PieceType.ROOK && boardNEW.getBoard()[i][j].getTeamColor() == ChessGame.TeamColor.WHITE ){
+                    board[j-1][i-1] = WHITE_ROOK;
+                }
+                else if (boardNEW.getBoard()[i][j].getPieceType() == ChessPiece.PieceType.KING && boardNEW.getBoard()[i][j].getTeamColor() == ChessGame.TeamColor.WHITE ){
+                    board[j-1][i-1] = WHITE_KING;
+                }
+                else if (boardNEW.getBoard()[i][j].getPieceType() == ChessPiece.PieceType.QUEEN && boardNEW.getBoard()[i][j].getTeamColor() == ChessGame.TeamColor.WHITE ){
+                    board[j-1][i-1] = WHITE_QUEEN;
+                }
+                else if (boardNEW.getBoard()[i][j].getPieceType() == ChessPiece.PieceType.BISHOP && boardNEW.getBoard()[i][j].getTeamColor() == ChessGame.TeamColor.WHITE ){
+                    board[j-1][i-1] = WHITE_BISHOP;
+                }
+                else if (boardNEW.getBoard()[i][j].getPieceType() == ChessPiece.PieceType.PAWN && boardNEW.getBoard()[i][j].getTeamColor() == ChessGame.TeamColor.BLACK ){
+                    board[j-1][i-1] = BLACK_PAWN;
+                }
+                else if (boardNEW.getBoard()[i][j].getPieceType() == ChessPiece.PieceType.KNIGHT && boardNEW.getBoard()[i][j].getTeamColor() == ChessGame.TeamColor.BLACK ){
+                    board[j-1][i-1] = BLACK_KNIGHT;
+                }
+                else if (boardNEW.getBoard()[i][j].getPieceType() == ChessPiece.PieceType.ROOK && boardNEW.getBoard()[i][j].getTeamColor() == ChessGame.TeamColor.BLACK ){
+                    board[j-1][i-1] = BLACK_ROOK;
+                }
+                else if (boardNEW.getBoard()[i][j].getPieceType() == ChessPiece.PieceType.KING && boardNEW.getBoard()[i][j].getTeamColor() == ChessGame.TeamColor.BLACK ){
+                    board[j-1][i-1] = BLACK_KING;
+                }
+                else if (boardNEW.getBoard()[i][j].getPieceType() == ChessPiece.PieceType.QUEEN && boardNEW.getBoard()[i][j].getTeamColor() == ChessGame.TeamColor.BLACK ){
+                    board[j-1][i-1] = BLACK_QUEEN;
+                }
+                else if (boardNEW.getBoard()[i][j].getPieceType() == ChessPiece.PieceType.BISHOP && boardNEW.getBoard()[i][j].getTeamColor() == ChessGame.TeamColor.BLACK ){
+                    board[j-1][i-1] = BLACK_BISHOP;
+                }
+
+            }
+        }
+    }
+
 }
