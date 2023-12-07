@@ -2,7 +2,6 @@ package ui;
 
 import chess.*;
 import model.Game_Record;
-import model.User_Record;
 import response.*;
 import webSocketMessages.userCommands.*;
 
@@ -25,9 +24,7 @@ public class ChessClient implements NotificationHandler {
     public PrintBoard board = new PrintBoard();
     public ChessGame chessGame;
     public String color;
-    NotificationHandler handler;
-    User_Record user;
-    ChessGame.TeamColor teamColor = null;
+    public ChessGame.TeamColor teamColor;
 
     public ChessClient() throws Exception {
         serverFacade = new ServerFacade("http://localhost:8080");
@@ -236,6 +233,7 @@ public class ChessClient implements NotificationHandler {
             username = null;
             gameID = null;
             color = null;
+            teamColor = null;
             return "Successfully logged out";
         }
 
@@ -275,10 +273,7 @@ public class ChessClient implements NotificationHandler {
                 if(temp.blackUsername() == null)
                     blackTemp = SET_TEXT_COLOR_RED + "EMPTY";
 
-                builder.append(i + ". NAME: " + SET_TEXT_COLOR_BLUE + temp.gameName() + SET_TEXT_COLOR_WHITE +
-                        ", ID: " + SET_TEXT_COLOR_BLUE + temp.gameID() + SET_TEXT_COLOR_WHITE +
-                        ", WhiteUser: " + whiteTemp + SET_TEXT_COLOR_WHITE +
-                        ", BlackUser: " + blackTemp + SET_TEXT_COLOR_WHITE + "\n");
+                builder.append(i).append(". NAME: ").append(SET_TEXT_COLOR_BLUE).append(temp.gameName()).append(SET_TEXT_COLOR_WHITE).append(", ID: ").append(SET_TEXT_COLOR_BLUE).append(temp.gameID()).append(SET_TEXT_COLOR_WHITE).append(", WhiteUser: ").append(whiteTemp).append(SET_TEXT_COLOR_WHITE).append(", BlackUser: ").append(blackTemp).append(SET_TEXT_COLOR_WHITE).append("\n");
                 i++;
             }
             return builder.toString();
@@ -297,17 +292,19 @@ public class ChessClient implements NotificationHandler {
             playing = true;
             gameID = com[1];
             color = com[2];
-
-            if (com[1].equalsIgnoreCase("WHITE")) {
+            if(com[2].equalsIgnoreCase("WHITE")) {
+                teamColor = ChessGame.TeamColor.WHITE;
                 board.printWhite();
-            } else {
+            }
+            else {
+                teamColor = ChessGame.TeamColor.BLACK;
                 board.printBlack();
             }
 
-            JoinPlayer comm = new JoinPlayer(com[1],teamColor,username, authToken);
+            JoinPlayer comm = new JoinPlayer(com[1], teamColor, username, authToken);
             ws.send(comm);
 
-            return "Successfully joined game " + com[1] + " as player: " + com[2];
+            return "Successfully joined game " + com[1] + " as player: " + com[2].toUpperCase();
         }
 
         return "Failed to join";

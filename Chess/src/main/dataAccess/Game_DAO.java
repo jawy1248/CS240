@@ -202,6 +202,50 @@ public class Game_DAO {
         }
     }
 
+    public void updateWhite(String name, String gameID){
+        String sql = "UPDATE game SET whiteUsername = ? WHERE gameID = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, name);
+            stmt.setString(2, gameID);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void updateBlack(String name, String gameID){
+        String sql = "UPDATE game SET blackUsername = ? WHERE gameID = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, name);
+            stmt.setString(2, gameID);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void delete(String gameID) {
+        String sql = "DELETE FROM game WHERE gameID = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, gameID);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void update(ChessGame game, String gameID){
+        String gameString = new Gson().toJson(game);
+        String sql = "UPDATE game SET game = ? WHERE gameid = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, gameString);
+            stmt.setString(2, gameID);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private ChessGame deserializeGame(String gameString) {
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(ChessBoard.class, new ChessBoardAdapter());

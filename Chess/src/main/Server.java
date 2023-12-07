@@ -1,12 +1,21 @@
 import spark.Spark;
 import handlers.*;
+import dataAccess.DataAccessException;
+import dataAccess.Database;
+import ws.WSHANDLER;
+import java.sql.Connection;
 
 public class Server {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws DataAccessException {
+        int port = Integer.parseInt(args[0]);
+        Database db = new Database();
+        Connection connection = db.getConnection();
+        WSHANDLER wshandler = new WSHANDLER(connection);
+
         try {
-            int port = Integer.parseInt(args[0]);
             // Set port and web file location
             Spark.port(port);
+            Spark.webSocket("/connect", wshandler);
             Spark.externalStaticFileLocation("web/");
 
             // Each of the contexts
