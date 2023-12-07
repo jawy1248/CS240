@@ -1,11 +1,12 @@
 package ui;
 
 import chess.*;
-import com.google.gson.Gson;
 import model.Game_Record;
 import response.*;
+import webSocketMessages.userCommands.*;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Iterator;
 
 import static ui.EscapeSequences.*;
@@ -115,14 +116,71 @@ public class ChessClient {
                 // in a game
                 if(!playing){
                     // not a player of the game
+                    if(commandIN.contains("help")) {
+                        System.out.print(SET_TEXT_COLOR_GREEN + "HELP -" + SET_TEXT_COLOR_WHITE + " List possible commands\n" +
+                                SET_TEXT_COLOR_GREEN + "QUIT" + SET_TEXT_COLOR_WHITE + " - Exits the chess program\n" +
+                                SET_TEXT_COLOR_GREEN + "REDRAW" + SET_TEXT_COLOR_WHITE + " - Redraws the chess board\n" +
+                                SET_TEXT_COLOR_GREEN + "LEAVE" + SET_TEXT_COLOR_WHITE + " - Leave the current game\n");
+                        return "[WATCHING]";
+                    }
 
                 } else {
                     // a player of the game
+                    if(commandIN.contains("help")) {
+                        System.out.print(SET_TEXT_COLOR_GREEN + "HELP -" + SET_TEXT_COLOR_WHITE + " List possible commands\n" +
+                                SET_TEXT_COLOR_GREEN + "QUIT" + SET_TEXT_COLOR_WHITE + " - Exits the chess program\n" +
+                                SET_TEXT_COLOR_GREEN + "REDRAW" + SET_TEXT_COLOR_WHITE + " - Redraws the chess board\n" +
+                                SET_TEXT_COLOR_GREEN + "LIST" + SET_TEXT_COLOR_BLUE + " <POS>" + SET_TEXT_COLOR_WHITE + " - Lists valid moves for the piece in POS\n" +
+                                SET_TEXT_COLOR_GREEN + "MOVE" + SET_TEXT_COLOR_BLUE + " <START POS><END POS>" + SET_TEXT_COLOR_WHITE + " - Make a move\n" +
+                                SET_TEXT_COLOR_GREEN + "LEAVE" + SET_TEXT_COLOR_WHITE + " - Leave the current game\n" +
+                                SET_TEXT_COLOR_GREEN + "RESIGN" + SET_TEXT_COLOR_WHITE + " - Resign from the game\n");
+                        return "[PLAYING]";
+                    }
+                    if(commandIN.contains("quit")) {
+                        return "Exiting the program";
+                    }
+                    if(commandIN.contains("redraw")) {
+                        if(color.equalsIgnoreCase("WHITE"))
+                            board.printWhite();
+                        else
+                            board.printBlack();
 
+                        return "[PLAYING]";
+                    }
+                    if(commandIN.contains("list")) {
+                        String temp = listMoves(length);
+                        System.out.println(temp);
+
+                        return "[PLAYING]";
+                    }
+                    if(commandIN.contains("move")) {
+                        String temp = move(length);
+                        System.out.println(temp);
+
+                        return "[PLAYING]";
+                    }
+                    if(commandIN.contains("leave")) {
+                        String temp = leave(length);
+                        System.out.println(temp);
+
+                        if(temp.equals("Failed to leave"))
+                            return "[PLAYING]";
+
+                        return "[LOGGED-IN]";
+                    }
+                    if(commandIN.contains("resign")) {
+                        String temp = resign(length);
+                        System.out.println(temp);
+
+                        if(temp.equals("Failed to leave"))
+                            return "[PLAYING]";
+
+                        return "[WATCHING]";
+                    }
                 }
             }
         }
-        return "";
+        return "[ERROR - COMMAND NOT FOUND]";
     }
 
     // -------------------- Helper Methods --------------------
@@ -239,14 +297,17 @@ public class ChessClient {
 
         Response resp = serverFacade.join(com[1], com[2]);
         if(resp.getCode() == 200) {
-//            joined = true;
-//            playing = true;
+            joined = true;
+            playing = true;
             gameID = com[1];
             color = com[2];
 
-            board.printBlack();
-            System.out.println();
-            board.printWhite();
+            if (com[1].equalsIgnoreCase("WHITE")) {
+                board.printWhite();
+            } else {
+                board.printBlack();
+            }
+
             return "Successfully joined game " + com[1] + " as player: " + com[2];
         }
 
@@ -260,16 +321,65 @@ public class ChessClient {
 
         Response resp = serverFacade.watch(com[1]);
         if(resp.getCode() == 200) {
-//            joined = true;
-//            playing = false;
+            joined = true;
+            playing = false;
             gameID = com[1];
 
-            board.printBlack();
-            System.out.println();
             board.printWhite();
+
             return "Successfully joined game " + com[1] + " as an observer";
         }
 
         return "Failed to watch";
+    }
+
+    // List possible moves
+    public String listMoves(String[] com) throws IOException{
+        if(com.length != 2)
+            return "ERROR - To list moves, provide only start position";
+        if(com[1].length() != 2)
+            return "ERROR - Incorrect position format";
+
+        ChessPosition pos = getPos(com[1]);
+        Collection<ChessMove> moves = chessGame.validMoves(pos);
+        if(color.equalsIgnoreCase("WHITE"))
+            board.whiteMoves(moves);
+        else
+            board.blackMoves(moves);
+
+        return null;
+    }
+
+    // Makes a move
+    public String move(String[] com) throws IOException{
+        if(com.length != 3)
+            return "ERROR - To move, provide start position and end position";
+
+        return null;
+    }
+
+    // Leaves a game
+    public String leave(String[] com) throws IOException{
+        if(com.length != 1)
+            return "ERROR - To leave, do NOT provide any additional arguments";
+
+
+
+        return null;
+    }
+
+    // Resigns from a game
+    public String resign(String[] com) throws IOException{
+        if(com.length != 1)
+            return "ERROR - To resign, do NOT provide any additional arguments";
+
+        return null;
+    }
+
+    // Gets position from string
+    public ChessPosition getPos(String pos){
+        int row = (pos.charAt(0) -'a') + 1;
+        int col =Integer.parseInt(String.valueOf(pos.charAt(1)));
+        return new Position(row, col);
     }
 }
