@@ -166,12 +166,7 @@ public class ChessClient {
                         return "[LOGGED-IN]";
                     }
                     if(commandIN.contains("resign")) {
-                        String temp = resign(length);
-                        System.out.println(temp);
-
-                        if(temp.equals("Failed to leave"))
-                            return "[PLAYING]";
-
+                        resign();
                         return "[WATCHING]";
                     }
                 }
@@ -358,13 +353,13 @@ public class ChessClient {
     // Leaves a game
     public void leave() throws Exception{
         Leave com = new Leave(UserGameCommand.CommandType.LEAVE, authToken, gameID, username);
-        webSocket.send(com);
+        ws.send(com);
     }
 
     // Resigns from a game
     public void resign() throws Exception {
         Resign com = new Resign(UserGameCommand.CommandType.RESIGN,authToken,gameID,username);
-        webSocket.send(com);
+        ws.send(com);
     }
 
     // Gets position from string
