@@ -14,6 +14,8 @@ import static ui.EscapeSequences.*;
 
 public class ChessClient {
     public ServerFacade serverFacade;
+    public webSocketClient ws;
+    NotificationHandler handler;
     public boolean loggedIN = false;
     public boolean joined = false;
     public boolean playing = false;
@@ -160,12 +162,7 @@ public class ChessClient {
                         return "[PLAYING]";
                     }
                     if(commandIN.contains("leave")) {
-                        String temp = leave(length);
-                        System.out.println(temp);
-
-                        if(temp.equals("Failed to leave"))
-                            return "[PLAYING]";
-
+                        leave();
                         return "[LOGGED-IN]";
                     }
                     if(commandIN.contains("resign")) {
@@ -359,21 +356,15 @@ public class ChessClient {
     }
 
     // Leaves a game
-    public String leave(String[] com) throws IOException{
-        if(com.length != 1)
-            return "ERROR - To leave, do NOT provide any additional arguments";
-
-
-
-        return null;
+    public void leave() throws Exception{
+        Leave com = new Leave(UserGameCommand.CommandType.LEAVE, authToken, gameID, username);
+        webSocket.send(com);
     }
 
     // Resigns from a game
-    public String resign(String[] com) throws IOException{
-        if(com.length != 1)
-            return "ERROR - To resign, do NOT provide any additional arguments";
-
-        return null;
+    public void resign() throws Exception {
+        Resign com = new Resign(UserGameCommand.CommandType.RESIGN,authToken,gameID,username);
+        webSocket.send(com);
     }
 
     // Gets position from string
