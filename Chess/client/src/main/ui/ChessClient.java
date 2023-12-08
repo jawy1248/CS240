@@ -23,6 +23,7 @@ public class ChessClient implements NotificationHandler {
     public String gameID;
     public PrintBoard board = new PrintBoard();
     public ChessGame chessGame;
+    public ChessBoard chessBoard;
     public String color;
     public ChessGame.TeamColor teamColor;
 
@@ -50,6 +51,11 @@ public class ChessClient implements NotificationHandler {
             if (commandIN.contains("quit")) {
                 System.out.println("Exiting the program");
                 return "";
+            }
+            if (commandIN.contains("clear")) {
+                clear(length);
+                System.out.println("Clearing the program");
+                return "[LOGGED_OUT]";
             }
             if (commandIN.contains("register")) {
                 String temp = register(length);
@@ -126,6 +132,14 @@ public class ChessClient implements NotificationHandler {
                                 SET_TEXT_COLOR_GREEN + "LEAVE" + SET_TEXT_COLOR_WHITE + " - Leave the current game\n");
                         return "[WATCHING]";
                     }
+                    if(commandIN.contains("redraw")) {
+                        updateBoard(chessGame);
+                        return "[PLAYING]";
+                    }
+                    if(commandIN.contains("leave")) {
+                        leave();
+                        return "[LOGGED-IN]";
+                    }
 
                 } else {
                     // a player of the game
@@ -143,11 +157,7 @@ public class ChessClient implements NotificationHandler {
                         return "Exiting the program";
                     }
                     if(commandIN.contains("redraw")) {
-                        if(color.equalsIgnoreCase("WHITE"))
-                            board.printWhite();
-                        else
-                            board.printBlack();
-
+                        updateBoard(chessGame);
                         return "[PLAYING]";
                     }
                     if(commandIN.contains("list")) {
@@ -177,17 +187,18 @@ public class ChessClient implements NotificationHandler {
     }
 
     // -------------------- Helper Methods --------------------
-//    // Clear
-//    public String clear(String[] com) throws IOException{
-//        if(com.length != 1)
-//            return "ERROR - To clear, do NOT provide any additional arguments";
-//
-//        Response resp = serverFacade.clear();
-//        if(resp.getCode() == 200)
-//            return "Successfully cleared all data";
-//
-//        return "Failed to clear";
-//    }
+    // Clear
+    public String clear(String[] com) throws IOException{
+        if(com.length != 1)
+            return "ERROR - To clear, do NOT provide any additional arguments";
+
+        Response resp = serverFacade.clear();
+        if(resp.getCode() == 200)
+            return "Successfully cleared all data";
+
+        return "Failed to clear";
+    }
+
     // Register
     public String register(String[] com) throws IOException {
         if(com.length != 4)
@@ -292,19 +303,25 @@ public class ChessClient implements NotificationHandler {
             playing = true;
             gameID = com[1];
             color = com[2];
-            if(com[2].equalsIgnoreCase("WHITE")) {
+
+            chessGame = new Game();
+            chessBoard = new Board();
+            chessBoard.resetBoard();
+            chessGame.setBoard(chessBoard);
+
+            if(color.equalsIgnoreCase("WHITE")) {
                 teamColor = ChessGame.TeamColor.WHITE;
-                board.printWhite();
+                updateBoard(chessGame);
             }
             else {
                 teamColor = ChessGame.TeamColor.BLACK;
-                board.printBlack();
+                updateBoard(chessGame);
             }
 
             JoinPlayer comm = new JoinPlayer(com[1], teamColor, username, authToken);
             ws.send(comm);
 
-            return "Successfully joined game " + com[1] + " as player: " + com[2].toUpperCase();
+            return "Successfully joined game " + gameID + " as player: " + teamColor;
         }
 
         return "Failed to join";
@@ -346,7 +363,7 @@ public class ChessClient implements NotificationHandler {
         else
             board.blackMoves(moves);
 
-        return null;
+        return "";
     }
 
     // Makes a move
@@ -362,23 +379,30 @@ public class ChessClient implements NotificationHandler {
 
         ChessPosition posStart = getPos(pos1Str);
         ChessPosition posEnd = getPos(pos2Str);
+        ChessMove move = new Move(posStart, posEnd, null);
 
-        Move move = new Move(posStart, posEnd, null);
-        if(!chessGame.validMoves(posStart).contains(move))
+        if(chessGame.validMoves(posStart) == null || !chessGame.validMoves(posStart).contains(move))
             return "Invalid Move";
-        if(chessGame.validMoves(posStart).isEmpty())
-            return "In Checkmate";
+
+        if(chessGame.isInCheck(teamColor))
+            System.out.println("In check");
+
+        if(chessGame.isInCheckmate(teamColor))
+            return "In checkmate";
+
         chessGame.makeMove(move);
-
         MakeMove comm = new MakeMove(gameID, authToken, username, move);
-        ws.send(comm);
 
-        return null;
+        ws.send(comm);
+        updateBoard(chessGame);
+
+        return "";
     }
 
     // Leaves a game
     public void leave() throws Exception{
         playing = false;
+        joined = false;
 
         Leave com = new Leave(UserGameCommand.CommandType.LEAVE, authToken, gameID, username);
         ws.send(com);
@@ -386,43 +410,40 @@ public class ChessClient implements NotificationHandler {
 
     // Resigns from a game
     public void resign() throws Exception {
+        Resign com = new Resign(UserGameCommand.CommandType.RESIGN, authToken, gameID, username);
+        ws.send(com);
+
         playing = false;
         joined = false;
         gameID = null;
         color = null;
-
-        Resign com = new Resign(UserGameCommand.CommandType.RESIGN,authToken,gameID,username);
-        ws.send(com);
     }
 
     // Gets position from string
     public ChessPosition getPos(String pos){
         int row = (pos.charAt(0) - 'a') + 1;
-        int col =Integer.parseInt(String.valueOf(pos.charAt(1)));
-        return new Position(row, col);
+        int col = Integer.parseInt(String.valueOf(pos.charAt(1)));
+        return new Position(col, row);
     }
 
     @Override
     public void updateBoard(ChessGame game) {
         this.chessGame = game;
         board.updateUIBoard(game);
-        if (color == null){
+        if (color == null)
             board.printWhite();
-        }else if (color.equalsIgnoreCase("black")) {
+        else if (color.equalsIgnoreCase("BLACK"))
             board.printBlack();
-        }else{
+        else
             board.printWhite();
-        }
-
     }
 
     @Override
     public void message(String message) {
-        if (message != null){
+        if (message != null)
             System.out.println(message);
-        }
     }
 
     @Override
-    public void error(String error) {}
+    public void error(String error) {System.out.println(error);}
 }

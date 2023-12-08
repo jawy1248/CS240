@@ -29,7 +29,7 @@ public class WSHANDLER {
     Connection connection;
 
     Database db = new Database();
-    ChessGame gameImplmentation;
+    ChessGame game;
 
 
     public WSHANDLER(Connection connection){
@@ -44,7 +44,7 @@ public class WSHANDLER {
         authDAO = new Auth_DAO(connection);
         gameDAO = new Game_DAO(connection);
         UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
-        System.out.println("COMMAND TYPE "+command.getCommandType());
+        System.out.println("COMMAND TYPE " + command.getCommandType());
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(ChessPosition.class, new ListAdapter());
         Gson gson = gsonBuilder.create();
@@ -59,7 +59,6 @@ public class WSHANDLER {
 
 
     public void join(Session session, JoinPlayer command) throws IOException {
-        //need a print board function to check user color id and then print corresponding board
         Game_Record game = gameDAO.findGame(Integer.parseInt(command.getGameID()));
         Auth_Record tokenModel= authDAO.findAuth(command.getAuthString());
         String username = null;
@@ -92,7 +91,6 @@ public class WSHANDLER {
             session.getRemote().sendString(new Gson().toJson(errorMessage));
         }
         else {
-            //check for matching usernames on command and connection
             if (command.getPlayerColor() == ChessGame.TeamColor.WHITE){
                 game.setWhiteUsername(username);
                 gameDAO.updateWhite(username, command.getGameID());
@@ -146,14 +144,14 @@ public class WSHANDLER {
             errorMessage.errorMessage ="Error there is no color";
             session.getRemote().sendString(new Gson().toJson(errorMessage));
         }else{
-            gameImplmentation = game.game();
+            this.game = game.game();
             Auth_Record tokenModel= authDAO.findAuth(command.getAuthString());
             String username = null;
             if (tokenModel!= null){
                 username = tokenModel.username();
             }
 
-            Collection<ChessMove> moves = gameImplmentation.validMoves(command.getMove().getStartPosition());
+            Collection<ChessMove> moves = this.game.validMoves(command.getMove().getStartPosition());
             if (moves == null){
                 System.out.println("Null moves");
                 ErrorMessage errorMessage = new ErrorMessage("error: That game doesn't exist");
@@ -165,19 +163,19 @@ public class WSHANDLER {
                 ErrorMessage errorMessage = new ErrorMessage("error: That game doesn't exist");
                 errorMessage.errorMessage ="Error there is no color";
                 session.getRemote().sendString(new Gson().toJson(errorMessage));
-            } else if (gameImplmentation.getTeamTurn() == ChessGame.TeamColor.WHITE && !Objects.equals(game.whiteUsername(), username)) {
+            } else if (this.game.getTeamTurn() == ChessGame.TeamColor.WHITE && !Objects.equals(game.whiteUsername(), username)) {
                 ErrorMessage errorMessage = new ErrorMessage("error: That game doesn't exist");
                 errorMessage.errorMessage ="Error there is no color";
                 session.getRemote().sendString(new Gson().toJson(errorMessage));
-            } else if (gameImplmentation.getTeamTurn() == ChessGame.TeamColor.BLACK && !Objects.equals(game.blackUsername(), username)) {
+            } else if (this.game.getTeamTurn() == ChessGame.TeamColor.BLACK && !Objects.equals(game.blackUsername(), username)) {
                 ErrorMessage errorMessage = new ErrorMessage("error: That game doesn't exist");
                 errorMessage.errorMessage = "Error there is no color";
                 session.getRemote().sendString(new Gson().toJson(errorMessage));
             }else if (moves.contains(command.getMove())){
                 System.out.println("making move");
-                gameImplmentation.makeMove(command.getMove());
-                gameDAO.update(gameImplmentation, command.getGameID());
-                LoadMessage loadMessage = new LoadMessage(gameImplmentation);
+                this.game.makeMove(command.getMove());
+                gameDAO.update(this.game, command.getGameID());
+                LoadMessage loadMessage = new LoadMessage(this.game);
                 session.getRemote().sendString(new Gson().toJson(loadMessage));
                 connectionManager.broadcastBoard(username, loadMessage);
                 NotificationMessage notificationMessage = new NotificationMessage("Gay");
@@ -201,7 +199,7 @@ public class WSHANDLER {
             session.getRemote().sendString(new Gson().toJson(errorMessage));
             return;
         }
-        gameImplmentation = game.game();
+        this.game = game.game();
         Auth_Record tokenModel= authDAO.findAuth(command.getAuthString());
         String username = null;
         if (tokenModel!= null){
@@ -228,7 +226,7 @@ public class WSHANDLER {
             errorMessage.errorMessage ="Error there is no color";
             session.getRemote().sendString(new Gson().toJson(errorMessage));
         }else {
-            gameImplmentation = game.game();
+            this.game = game.game();
             Auth_Record tokenModel= authDAO.findAuth(command.getAuthString());
             String username = null;
             if (tokenModel!= null){

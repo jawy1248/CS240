@@ -1,7 +1,7 @@
 package ui;
 
 import chess.*;
-import chess.ChessGame;
+
 import com.google.gson.*;
 import webSocketMessages.serverMessages.ErrorMessage;
 import webSocketMessages.serverMessages.NotificationMessage;
@@ -11,7 +11,6 @@ import webSocketMessages.userCommands.UserGameCommand;
 import javax.websocket.*;
 import java.lang.reflect.Type;
 import java.net.URI;
-
 
 public class webSocketClient extends Endpoint {
     public interface WebSocketClientObserver{
@@ -23,9 +22,7 @@ public class webSocketClient extends Endpoint {
     NotificationHandler notificationHandler;
 
     public webSocketClient(String url, NotificationHandler handler) throws Exception {
-        //connect to the server and then sends cmd line args to socket on the server side
         this.notificationHandler = handler;
-        System.out.println("IN WS");
         URI uri = new URI(url);
         WebSocketContainer container = ContainerProvider.getWebSocketContainer();
         this.session = container.connectToServer(this , uri);
@@ -45,21 +42,17 @@ public class webSocketClient extends Endpoint {
                             notificationHandler.error(new Gson().fromJson(message, ErrorMessage.class).toString());
                     }
                 }catch (Exception e){
-                    e.printStackTrace();
+                    throw new RuntimeException(e);
                 }
             }
         });
-
-
     }
     public void send(UserGameCommand msg) throws Exception {
         this.session.getBasicRemote().sendText(new Gson().toJson(msg));
     }
 
     @Override
-    public void onOpen(javax.websocket.Session session, EndpointConfig endpointConfig) {
-
-    }
+    public void onOpen(javax.websocket.Session session, EndpointConfig endpointConfig) {}
 
     public ChessGame deserializeBoard(String gameString) {
         GsonBuilder gsonBuilder = new GsonBuilder();
