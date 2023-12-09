@@ -80,7 +80,7 @@ public class Game implements ChessGame {
         else
             board.addPiece(move.getEndPosition(), new Piece(pieceMoving.getTeamColor(), move.getPromotionPiece()));
 
-        // Change whos turn it is
+        // Change turn
         if(tempColor == WHITE)
             setTeamTurn(BLACK);
         else
