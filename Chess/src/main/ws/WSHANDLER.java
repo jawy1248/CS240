@@ -46,7 +46,8 @@ public class WSHANDLER {
         UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
         System.out.println("COMMAND TYPE " + command.getCommandType());
         GsonBuilder gsonBuilder = new GsonBuilder();
-        gsonBuilder.registerTypeAdapter(ChessPosition.class, new ListAdapter());
+        gsonBuilder.registerTypeAdapter(ChessPosition.class, new PosAdapter());
+        gsonBuilder.registerTypeAdapter(ChessMove.class, new MoveAdapter());
         Gson gson = gsonBuilder.create();
         switch (command.getCommandType()) {
             case JOIN_PLAYER -> join(session, new Gson().fromJson(message, JoinPlayer.class));
@@ -56,7 +57,6 @@ public class WSHANDLER {
             case RESIGN -> resign(session, new Gson().fromJson(message, Resign.class));
         }
     }
-
 
     public void join(Session session, JoinPlayer command) throws IOException {
         Game_Record game = gameDAO.findGame(Integer.parseInt(command.getGameID()));
@@ -139,7 +139,6 @@ public class WSHANDLER {
     public void move(Session session, MakeMove command) throws InvalidMoveException, IOException {
         Game_Record game = gameDAO.findGame(Integer.parseInt(command.getGameID()));
         if (game == null){
-            System.out.println("CUNT");
             ErrorMessage errorMessage = new ErrorMessage("error: That game doesn't exist");
             errorMessage.errorMessage ="Error there is no color";
             session.getRemote().sendString(new Gson().toJson(errorMessage));
@@ -147,9 +146,8 @@ public class WSHANDLER {
             this.game = game.game();
             Auth_Record tokenModel= authDAO.findAuth(command.getAuthString());
             String username = null;
-            if (tokenModel!= null){
+            if (tokenModel!= null)
                 username = tokenModel.username();
-            }
 
             Collection<ChessMove> moves = this.game.validMoves(command.getMove().getStartPosition());
             if (moves == null){
@@ -252,10 +250,17 @@ public class WSHANDLER {
         }
     }
 
-    static class ListAdapter implements JsonDeserializer<ChessPosition> {
+    static class PosAdapter implements JsonDeserializer<ChessPosition> {
         @Override
         public ChessPosition deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-            return jsonDeserializationContext.deserialize(jsonElement,ChessPosition.class);
+            return jsonDeserializationContext.deserialize(jsonElement,Position.class);
+        }
+    }
+
+    static class MoveAdapter implements JsonDeserializer<ChessMove> {
+        @Override
+        public ChessMove deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+            return jsonDeserializationContext.deserialize(jsonElement,Move.class);
         }
     }
 

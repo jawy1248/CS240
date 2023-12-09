@@ -35,11 +35,13 @@ public class Game implements ChessGame {
 
         Collection<ChessMove> vMoves = new HashSet<>();
 
-        for(ChessMove move: possMoves) {
+        for(ChessMove move:possMoves) {
             tempStart = move.getStartPosition();
             tempEnd = move.getEndPosition();
-            tempStartPiece = board.removePiece(tempStart);
-            tempEndPiece = board.removePiece(tempEnd);
+            tempStartPiece = board.getPiece(tempStart);
+            board.removePiece(tempStart);
+            tempEndPiece = board.getPiece(tempEnd);
+            board.removePiece(tempEnd);
 
             // Move the piece
             board.addPiece(tempEnd, tempStartPiece);
@@ -71,7 +73,8 @@ public class Game implements ChessGame {
         if(validMoves == null || !validMoves.contains(move))
             throw new InvalidMoveException();
 
-        ChessPiece pieceMoving = board.removePiece(move.getStartPosition());
+        ChessPiece pieceMoving = board.getPiece(move.getStartPosition());
+        board.removePiece(move.getStartPosition());
         if(move.getPromotionPiece() == null)
             board.addPiece(move.getEndPosition(), pieceMoving);
         else
@@ -121,7 +124,6 @@ public class Game implements ChessGame {
             if(inCheck)
                 break;
         }
-
         return inCheck;
     }
 
