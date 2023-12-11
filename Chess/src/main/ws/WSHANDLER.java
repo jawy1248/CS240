@@ -66,45 +66,44 @@ public class WSHANDLER {
             username = tokenModel.username();
         }
         if (authDAO.findAuth(command.getAuthString()) == null){
-            ErrorMessage errorMessage = new ErrorMessage("error: That game doesn't exist");
-            errorMessage.errorMessage ="Error that game is no good";
+            ErrorMessage errorMessage = new ErrorMessage("");
+            errorMessage.errorMessage = "Error: Unauthorized";
             session.getRemote().sendString(new Gson().toJson(errorMessage));
         }
         else if (game == null){
-            ErrorMessage errorMessage = new ErrorMessage("error: That game doesn't exist");
-            errorMessage.errorMessage ="Error that game is no good";
+            ErrorMessage errorMessage = new ErrorMessage("");
+            errorMessage.errorMessage = "Error: Game does not exist";
             session.getRemote().sendString(new Gson().toJson(errorMessage));
         }
         else if (command.getPlayerColor() == null){
-            ErrorMessage errorMessage = new ErrorMessage("error: That game doesn't exist");
-            errorMessage.errorMessage ="Error there is no color";
+            ErrorMessage errorMessage = new ErrorMessage("");
+            errorMessage.errorMessage = "Error: No player color";
             session.getRemote().sendString(new Gson().toJson(errorMessage));
         }
         else if (command.getPlayerColor() == ChessGame.TeamColor.WHITE && !Objects.equals(game.whiteUsername(), username)){
-            ErrorMessage errorMessage = new ErrorMessage("error: That game doesn't exist");
-            errorMessage.errorMessage ="Error there is no color";
+            ErrorMessage errorMessage = new ErrorMessage("");
+            errorMessage.errorMessage = "Error: Not your turn";
             session.getRemote().sendString(new Gson().toJson(errorMessage));
         }
         else if (command.getPlayerColor() == ChessGame.TeamColor.BLACK && !Objects.equals(game.blackUsername(), username)){
-            ErrorMessage errorMessage = new ErrorMessage("error: That game doesn't exist");
-            errorMessage.errorMessage ="Error there is no color";
+            ErrorMessage errorMessage = new ErrorMessage("");
+            errorMessage.errorMessage = "Error: Not your turn";
             session.getRemote().sendString(new Gson().toJson(errorMessage));
         }
         else {
             if (command.getPlayerColor() == ChessGame.TeamColor.WHITE){
                 game.setWhiteUsername(username);
                 gameDAO.updateWhite(username, command.getGameID());
-            }
-            if (command.getPlayerColor() == ChessGame.TeamColor.BLACK){
+            } else if (command.getPlayerColor() == ChessGame.TeamColor.BLACK){
                 game.setBlackUsername(username);
                 gameDAO.updateBlack(username,command.getGameID());
             }
             LoadMessage loadMessage = new LoadMessage(game.game());
             session.getRemote().sendString(new Gson().toJson(loadMessage));
             connectionManager.add(username, session);
-            String message = (command.getUsername() + " has joined as " + command.getPlayerColor());
-            NotificationMessage notificationMessage = new NotificationMessage(message);
-            notificationMessage.message =message;
+            String message = (command.getUsername() + " joined as " + command.getPlayerColor() + "\n>>> ");
+            NotificationMessage notificationMessage = new NotificationMessage("");
+            notificationMessage.message = message;
             connectionManager.broadcast(username, notificationMessage);
         }
     }
@@ -112,25 +111,24 @@ public class WSHANDLER {
         Game_Record game = gameDAO.findGame(Integer.parseInt(command.getGameID()));
         Auth_Record tokenModel= authDAO.findAuth(command.getAuthString());
         String username = null;
-        if (tokenModel!= null){
+        if (tokenModel != null)
             username = tokenModel.username();
-        }
         if (authDAO.findAuth(command.getAuthString()) == null){
-            ErrorMessage errorMessage = new ErrorMessage("error: That game doesn't exist");
-            errorMessage.errorMessage ="Error that game is no good";
+            ErrorMessage errorMessage = new ErrorMessage("");
+            errorMessage.errorMessage = "Error: Unauthorized";
             session.getRemote().sendString(new Gson().toJson(errorMessage));
         }
         else if (game == null){
-            ErrorMessage errorMessage = new ErrorMessage("error: That game doesn't exist");
-            errorMessage.errorMessage ="Error that game is no good";
+            ErrorMessage errorMessage = new ErrorMessage("");
+            errorMessage.errorMessage = "Error: Game does not exist";
             session.getRemote().sendString(new Gson().toJson(errorMessage));
         }
         else{
             LoadMessage loadMessage = new LoadMessage(game.game());
             session.getRemote().sendString(new Gson().toJson(loadMessage));
             connectionManager.add(username, session);
-            String message = (username + " has joined as an observer");
-            NotificationMessage notificationMessage = new NotificationMessage(message);
+            String message = (username + " joined as an observer" + "\n>>>");
+            NotificationMessage notificationMessage = new NotificationMessage("");
             notificationMessage.message = message;
             connectionManager.broadcast(username, notificationMessage);
         }
@@ -139,8 +137,8 @@ public class WSHANDLER {
     public void move(Session session, MakeMove command) throws InvalidMoveException, IOException {
         Game_Record game = gameDAO.findGame(Integer.parseInt(command.getGameID()));
         if (game == null){
-            ErrorMessage errorMessage = new ErrorMessage("error: That game doesn't exist");
-            errorMessage.errorMessage ="Error there is no color";
+            ErrorMessage errorMessage = new ErrorMessage("");
+            errorMessage.errorMessage = "Error: Game does not exist";
             session.getRemote().sendString(new Gson().toJson(errorMessage));
         }else{
             gameSave = (Game) game.game();
@@ -182,7 +180,7 @@ public class WSHANDLER {
             }
             else{
                 ErrorMessage errorMessage = new ErrorMessage("error: That game doesn't exist");
-                errorMessage.errorMessage ="Error there is no color";
+                errorMessage.errorMessage = "Error there is no color";
                 session.getRemote().sendString(new Gson().toJson(errorMessage));
             }
         }
