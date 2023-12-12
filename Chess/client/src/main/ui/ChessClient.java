@@ -441,9 +441,11 @@ public class ChessClient implements NotificationHandler {
     @Override
     public void message(String message) {
         if (message != null)
-            System.out.println(message);
+            System.out.print(SET_TEXT_COLOR_RED + message + SET_TEXT_COLOR_WHITE + "\n>>> " + SET_TEXT_COLOR_GREEN);
     }
 
     @Override
-    public void error(String error) {System.out.println(error);}
+    public void error(String error) {
+//        System.out.println(error);
+    }
 }

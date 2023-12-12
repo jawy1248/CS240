@@ -16,7 +16,6 @@ public class Board implements ChessBoard {
     public void removePiece(ChessPosition position){
         int row = position.getRow();
         int col = position.getColumn();
-        ChessPiece remPiece = getPiece(position);
 
         board[row][col] = null;
     }

@@ -22,10 +22,13 @@ public class Game implements ChessGame {
 
     @Override
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        Collection<ChessMove> possMoves = board.getPiece(startPosition).pieceMoves(board, startPosition);
         ChessPiece startPiece = board.getPiece(startPosition);
+        if(startPiece == null)
+            return null;
 
-        if(startPiece == null || possMoves == null || possMoves.isEmpty())
+        Collection<ChessMove> possMoves = startPiece.pieceMoves(board, startPosition);
+
+        if(possMoves == null || possMoves.isEmpty())
             return null;
 
         ChessPosition tempStart;
