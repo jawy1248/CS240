@@ -1,14 +1,10 @@
 package ui;
 
-import java.io.PrintStream;
-import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import chess.*;
 import chess.ChessPiece.*;
 import chess.ChessGame.TeamColor;
 import static chess.ChessGame.TeamColor.*;
-import static chess.ChessPiece.PieceType.*;
-
 import static ui.EscapeSequences.*;
 
 public class PrintBoard {
@@ -24,76 +20,8 @@ public class PrintBoard {
             {BLACK_ROOK, BLACK_KNIGHT, BLACK_BISHOP, BLACK_KING, BLACK_QUEEN, BLACK_BISHOP, BLACK_KNIGHT, BLACK_ROOK},
     };
 
-    public void printBlack(){
-        System.out.print(SET_TEXT_COLOR_WHITE);
-        System.out.print(SET_BG_COLOR_LIGHT_GREY);
-        System.out.print("    ");
-        for(int i=0; i<8; i++){
-            System.out.print(SET_BG_COLOR_LIGHT_GREY);
-            char x = (char) ('h' - i);
-            System.out.print(x + "  ");
-        }
-        System.out.print("  ");
-        System.out.print(SET_BG_COLOR_DARK_GREY);
-        System.out.println();
-
-        for(int i=0; i<8; i++){
-            for(int j=0; j<8; j++){
-                boolean white = ( (i + j) % 2 == 0 );
-                if(j == 0){
-                    System.out.print(SET_BG_COLOR_LIGHT_GREY);
-                    System.out.print(" ");
-                    System.out.print(1+i);
-                    System.out.print(" ");
-                }
-                if(!white){
-                    System.out.print(SET_BG_COLOR_DARK_GREEN);
-                    if(!board[i][j].equals(EMPTY))
-                        System.out.print(SET_TEXT_COLOR_WHITE);
-                    System.out.print(board[i][j]);
-                } else {
-                    System.out.print(SET_BG_COLOR_DARK_GREY);
-                    if(!board[i][j].equals(EMPTY))
-                        System.out.print(SET_TEXT_COLOR_WHITE);
-                    System.out.print(board[i][j]);
-                }
-                System.out.print(SET_TEXT_COLOR_WHITE);
-                if(j==7){
-                    System.out.print(SET_BG_COLOR_LIGHT_GREY);
-                    System.out.print(" ");
-                    System.out.print(1+i);
-                    System.out.print(" ");
-                }
-            }
-            System.out.print(SET_BG_COLOR_DARK_GREY);
-            System.out.println();
-        }
-        System.out.print(SET_BG_COLOR_LIGHT_GREY);
-        System.out.print("    ");
-        for(int i=0; i<8; i++){
-            System.out.print(SET_BG_COLOR_LIGHT_GREY);
-            char x = (char) ('h' - i);
-            System.out.print(x + "  ");
-        }
-        System.out.print(SET_BG_COLOR_LIGHT_GREY);
-        System.out.print("  ");
-        System.out.print(SET_BG_COLOR_DARK_GREY);
-        System.out.println();
-    }
-
     public void printWhite(){
-        System.out.print(SET_TEXT_COLOR_WHITE);
-        System.out.print(SET_BG_COLOR_LIGHT_GREY);
-        System.out.print("    ");
-        for(int i=0; i<8; i++){
-            System.out.print(SET_BG_COLOR_LIGHT_GREY);
-            char x = (char) ('a' + i);
-            System.out.print(x + "  ");
-        }
-        System.out.print("  ");
-        System.out.print(SET_BG_COLOR_DARK_GREY);
-        System.out.println();
-
+        whiteSetupTop();
         for(int i=0; i<8; i++){
             for(int j=0; j<8; j++){
                 boolean white = ( (i + j) % 2 == 0 );
@@ -125,17 +53,7 @@ public class PrintBoard {
             System.out.print(SET_BG_COLOR_DARK_GREY);
             System.out.println();
         }
-        System.out.print(SET_BG_COLOR_LIGHT_GREY);
-        System.out.print("    ");
-        for(int i=0; i<8; i++){
-            System.out.print(SET_BG_COLOR_LIGHT_GREY);
-            char x = (char) ('a' + i);
-            System.out.print(x + "  ");
-        }
-        System.out.print(SET_BG_COLOR_LIGHT_GREY);
-        System.out.print("  ");
-        System.out.print(SET_BG_COLOR_DARK_GREY);
-        System.out.println();
+        whiteSetupBottom();
     }
 
     public void whiteMoves(Collection<ChessMove> moves){
@@ -143,18 +61,7 @@ public class PrintBoard {
             printWhite();
             return;
         }
-        System.out.print(SET_TEXT_COLOR_WHITE);
-        System.out.print(SET_BG_COLOR_LIGHT_GREY);
-        System.out.print("    ");
-        for (int i=0; i<8; i++) {
-            System.out.print(SET_BG_COLOR_LIGHT_GREY);
-            char x = (char) ('a' + i);
-            System.out.print(x + "  ");
-        }
-        System.out.print("  ");
-        System.out.print(SET_BG_COLOR_DARK_GREY);
-        System.out.println();
-
+        whiteSetupTop();
         for(int i=0; i<8; i++){
             for(int j=0; j<8; j++){
                 boolean white = ( (i + j) % 2 == 0 );
@@ -218,18 +125,47 @@ public class PrintBoard {
             System.out.print(SET_BG_COLOR_DARK_GREY);
             System.out.println();
         }
-        System.out.print(SET_BG_COLOR_LIGHT_GREY);
-        System.out.print("    ");
+        whiteSetupBottom();
+    }
 
-        for (int i = 0; i < 8; i++) {
-            System.out.print(SET_BG_COLOR_LIGHT_GREY);
-            char x = (char) ('a' + i);
-            System.out.print( x+ "  " );
-        }
-        System.out.print(SET_BG_COLOR_LIGHT_GREY);
+    public void printBlack(){
+        blackSetupTop();
         System.out.print("  ");
         System.out.print(SET_BG_COLOR_DARK_GREY);
         System.out.println();
+
+        for(int i=0; i<8; i++){
+            for(int j=0; j<8; j++){
+                boolean white = ( (i + j) % 2 == 0 );
+                if(j == 0){
+                    System.out.print(SET_BG_COLOR_LIGHT_GREY);
+                    System.out.print(" ");
+                    System.out.print(1+i);
+                    System.out.print(" ");
+                }
+                if(!white){
+                    System.out.print(SET_BG_COLOR_DARK_GREEN);
+                    if(!board[i][j].equals(EMPTY))
+                        System.out.print(SET_TEXT_COLOR_WHITE);
+                    System.out.print(board[i][j]);
+                } else {
+                    System.out.print(SET_BG_COLOR_DARK_GREY);
+                    if(!board[i][j].equals(EMPTY))
+                        System.out.print(SET_TEXT_COLOR_WHITE);
+                    System.out.print(board[i][j]);
+                }
+                System.out.print(SET_TEXT_COLOR_WHITE);
+                if(j==7){
+                    System.out.print(SET_BG_COLOR_LIGHT_GREY);
+                    System.out.print(" ");
+                    System.out.print(1+i);
+                    System.out.print(" ");
+                }
+            }
+            System.out.print(SET_BG_COLOR_DARK_GREY);
+            System.out.println();
+        }
+        blackSetupBottom(SET_BG_COLOR_DARK_GREY);
     }
 
     public void blackMoves(Collection<ChessMove> moves){
@@ -237,14 +173,7 @@ public class PrintBoard {
             printBlack();
             return;
         }
-        System.out.print(SET_TEXT_COLOR_WHITE);
-        System.out.print(SET_BG_COLOR_LIGHT_GREY);
-        System.out.print("    ");
-        for (int i=0; i<8; i++) {
-            System.out.print(SET_BG_COLOR_LIGHT_GREY);
-            char x = (char) ('h' - i);
-            System.out.print(x + "  ");
-        }
+        blackSetupTop();
         System.out.print(SET_BG_COLOR_LIGHT_GREY);
         System.out.print("  ");
         System.out.print(SET_BG_COLOR_DARK_GREY);
@@ -319,17 +248,7 @@ public class PrintBoard {
             System.out.print(SET_BG_COLOR_DARK_GREY);
             System.out.println();
         }
-        System.out.print(SET_BG_COLOR_LIGHT_GREY);
-        System.out.print("    ");
-        for (int i=0; i<8; i++) {
-            System.out.print(SET_BG_COLOR_LIGHT_GREY);
-            char x = (char) ('h' - i);
-            System.out.print(x + "  ");
-        }
-        System.out.print(SET_BG_COLOR_LIGHT_GREY);
-        System.out.print("  ");
-        System.out.print(SET_BG_COLOR_BLACK);
-        System.out.println();
+        blackSetupBottom(SET_BG_COLOR_BLACK);
     }
 
     public void updateUIBoard(ChessGame game){
@@ -365,5 +284,59 @@ public class PrintBoard {
                 }
             }
         }
+    }
+
+    private void whiteSetupTop() {
+        System.out.print(SET_TEXT_COLOR_WHITE);
+        System.out.print(SET_BG_COLOR_LIGHT_GREY);
+        System.out.print("    ");
+        for(int i=0; i<8; i++){
+            System.out.print(SET_BG_COLOR_LIGHT_GREY);
+            char x = (char) ('a' + i);
+            System.out.print(x + "  ");
+        }
+        System.out.print("  ");
+        System.out.print(SET_BG_COLOR_DARK_GREY);
+        System.out.println();
+    }
+
+    private void whiteSetupBottom() {
+        System.out.print(SET_BG_COLOR_LIGHT_GREY);
+        System.out.print("    ");
+
+        for (int i = 0; i < 8; i++) {
+            System.out.print(SET_BG_COLOR_LIGHT_GREY);
+            char x = (char) ('a' + i);
+            System.out.print( x+ "  " );
+        }
+        System.out.print(SET_BG_COLOR_LIGHT_GREY);
+        System.out.print("  ");
+        System.out.print(SET_BG_COLOR_DARK_GREY);
+        System.out.println();
+    }
+
+    private void blackSetupTop() {
+        System.out.print(SET_TEXT_COLOR_WHITE);
+        System.out.print(SET_BG_COLOR_LIGHT_GREY);
+        System.out.print("    ");
+        for(int i=0; i<8; i++){
+            System.out.print(SET_BG_COLOR_LIGHT_GREY);
+            char x = (char) ('h' - i);
+            System.out.print(x + "  ");
+        }
+    }
+
+    private void blackSetupBottom(String setBgColorBlack) {
+        System.out.print(SET_BG_COLOR_LIGHT_GREY);
+        System.out.print("    ");
+        for (int i=0; i<8; i++) {
+            System.out.print(SET_BG_COLOR_LIGHT_GREY);
+            char x = (char) ('h' - i);
+            System.out.print(x + "  ");
+        }
+        System.out.print(SET_BG_COLOR_LIGHT_GREY);
+        System.out.print("  ");
+        System.out.print(setBgColorBlack);
+        System.out.println();
     }
 }

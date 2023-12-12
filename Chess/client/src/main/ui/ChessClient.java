@@ -8,9 +8,9 @@ import webSocketMessages.userCommands.*;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Scanner;
 
 import static ui.EscapeSequences.*;
-
 
 public class ChessClient implements NotificationHandler {
     public ServerFacade serverFacade;
@@ -34,11 +34,15 @@ public class ChessClient implements NotificationHandler {
 
     // -------------------- Main Method --------------------
     public String command(String commandIN) throws Exception{
+        // Set the command to lowercase to be safe
         commandIN = commandIN.toLowerCase();
 
+        // Split the command into words and make sure that it has a command
         String[] length = commandIN.split(" ");
         if(length.length == 0)
             return " ";
+
+        // Start command tree...depending on variables determines commands available
         if(!loggedIN){
             // not logged in
             if(commandIN.contains("help")){
@@ -53,18 +57,30 @@ public class ChessClient implements NotificationHandler {
                 return "";
             }
             if (commandIN.contains("clear")) {
-                clear(length);
-                System.out.println("Clearing the program");
+                String temp = clear(length);
+                if(temp.equals("Failed to clear"))
+                    System.out.println("System did not clear");
+                else
+                    System.out.println("Clearing the program");
+
                 return "[LOGGED_OUT]";
             }
             if (commandIN.contains("register")) {
                 String temp = register(length);
                 System.out.println(temp);
+
+                if(temp.equals("Failed to register"))
+                    return "[LOGGED_OUT]";
+
                 return "[LOGGED_IN]";
             }
             if (commandIN.contains("login")) {
                 String temp = login(length);
                 System.out.println(temp);
+
+                if(temp.equals("Failed to login"))
+                    return "[LOGGED_OUT]";
+
                 return "[LOGGED_IN]";
             }
         }else{
@@ -72,7 +88,7 @@ public class ChessClient implements NotificationHandler {
             if(!joined) {
                 // not in a game
                 if (commandIN.contains("help")) {
-                    System.out.print(SET_TEXT_COLOR_GREEN + "HELP -" + SET_TEXT_COLOR_WHITE + " List possible commands\n" +
+                    System.out.print(SET_TEXT_COLOR_GREEN + "HELP" + SET_TEXT_COLOR_WHITE + " - List possible commands\n" +
                             SET_TEXT_COLOR_GREEN + "QUIT" + SET_TEXT_COLOR_WHITE + " - Exits the chess program\n" +
                             SET_TEXT_COLOR_GREEN + "LOGOUT" + SET_TEXT_COLOR_WHITE + " - Log out of the game\n" +
                             SET_TEXT_COLOR_GREEN + "CREATE" + SET_TEXT_COLOR_BLUE + " <NAME>" + SET_TEXT_COLOR_WHITE + " Creates a chess game\n" +
@@ -110,7 +126,7 @@ public class ChessClient implements NotificationHandler {
                     if(temp.equals("Failed to join"))
                         return "[LOGGED_IN]";
 
-                    return "[PLAYING]";
+                    return "[IN_GAME]";
                 }
                 if (commandIN.contains("watch")) {
                     String temp = watch(length);
@@ -119,66 +135,72 @@ public class ChessClient implements NotificationHandler {
                     if(temp.equals("Failed to watch"))
                         return "[LOGGED_IN]";
 
-                    return "[WATCHING]";
+                    return "[IN_GAME]";
                 }
             } else {
                 // in a game
                 if(!playing){
                     // not a player of the game
                     if(commandIN.contains("help")) {
-                        System.out.print(SET_TEXT_COLOR_GREEN + "HELP -" + SET_TEXT_COLOR_WHITE + " List possible commands\n" +
+                        System.out.print(SET_TEXT_COLOR_GREEN + "HELP" + SET_TEXT_COLOR_WHITE + " - List possible commands\n" +
                                 SET_TEXT_COLOR_GREEN + "QUIT" + SET_TEXT_COLOR_WHITE + " - Exits the chess program\n" +
                                 SET_TEXT_COLOR_GREEN + "REDRAW" + SET_TEXT_COLOR_WHITE + " - Redraws the chess board\n" +
                                 SET_TEXT_COLOR_GREEN + "LEAVE" + SET_TEXT_COLOR_WHITE + " - Leave the current game\n");
-                        return "[WATCHING]";
+                        return "[IN_GAME]";
                     }
                     if(commandIN.contains("redraw")) {
                         updateBoard(chessGame);
-                        return "[PLAYING]";
+                        return "[IN_GAME]";
                     }
                     if(commandIN.contains("leave")) {
                         leave();
                         return "[LOGGED-IN]";
                     }
-
                 } else {
                     // a player of the game
                     if(commandIN.contains("help")) {
-                        System.out.print(SET_TEXT_COLOR_GREEN + "HELP -" + SET_TEXT_COLOR_WHITE + " List possible commands\n" +
+                        System.out.print(SET_TEXT_COLOR_GREEN + "HELP" + SET_TEXT_COLOR_WHITE + " - List possible commands\n" +
                                 SET_TEXT_COLOR_GREEN + "QUIT" + SET_TEXT_COLOR_WHITE + " - Exits the chess program\n" +
                                 SET_TEXT_COLOR_GREEN + "REDRAW" + SET_TEXT_COLOR_WHITE + " - Redraws the chess board\n" +
                                 SET_TEXT_COLOR_GREEN + "LIST" + SET_TEXT_COLOR_BLUE + " <POS>" + SET_TEXT_COLOR_WHITE + " - Lists valid moves for the piece in POS\n" +
                                 SET_TEXT_COLOR_GREEN + "MOVE" + SET_TEXT_COLOR_BLUE + " <START POS><END POS>" + SET_TEXT_COLOR_WHITE + " - Make a move\n" +
                                 SET_TEXT_COLOR_GREEN + "LEAVE" + SET_TEXT_COLOR_WHITE + " - Leave the current game\n" +
                                 SET_TEXT_COLOR_GREEN + "RESIGN" + SET_TEXT_COLOR_WHITE + " - Resign from the game\n");
-                        return "[PLAYING]";
+                        return "[IN_GAME]";
                     }
                     if(commandIN.contains("quit")) {
                         return "Exiting the program";
                     }
                     if(commandIN.contains("redraw")) {
                         updateBoard(chessGame);
-                        return "[PLAYING]";
+                        return "[IN_GAME]";
                     }
                     if(commandIN.contains("list")) {
                         String temp = listMoves(length);
                         System.out.println(temp);
-
-                        return "[PLAYING]";
+                        return "[IN_GAME]";
                     }
                     if(commandIN.contains("move")) {
                         String temp = move(length);
                         System.out.println(temp);
-
-                        return "[PLAYING]";
+                        return "[IN_GAME]";
                     }
                     if(commandIN.contains("leave")) {
                         leave();
                         return "[LOGGED-IN]";
                     }
                     if(commandIN.contains("resign")) {
-                        resign();
-                        return "[WATCHING]";
+                        System.out.print("Are you sure you want to resign? (y/n): ");
+                        // Set scanner to read in text from user command line
+                        Scanner scanner = new Scanner(System.in);
+                        String ans = scanner.nextLine();
+
+                        if(ans.equalsIgnoreCase("y")) {
+                            System.out.println(SET_TEXT_COLOR_RED + "Resigned from game" + SET_TEXT_COLOR_WHITE);
+                            resign();
+                        }
+
+                        return "[LOGGED_IN]";
                     }
                 }
             }
@@ -214,6 +236,7 @@ public class ChessClient implements NotificationHandler {
         }
         return "Failed to register";
     }
+
     // Login
     public String login(String[] com) throws IOException{
         if(com.length != 3)
@@ -350,7 +373,7 @@ public class ChessClient implements NotificationHandler {
     }
 
     // List possible moves
-    public String listMoves(String[] com) throws IOException{
+    public String listMoves(String[] com){
         if(com.length != 2)
             return "ERROR - To list moves, provide only start position";
         if(com[1].length() != 2)
