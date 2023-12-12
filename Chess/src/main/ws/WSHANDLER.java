@@ -285,7 +285,7 @@ public class WSHANDLER {
                 String message = (username + " has left the game");
                 NotificationMessage notificationMessage = new NotificationMessage(message);
                 connectionManager.remove(username);
-                connectionManager.broadcast(username, notificationMessage);
+                connectionManager.broadcastALL(username, notificationMessage);
             }
         }
     }

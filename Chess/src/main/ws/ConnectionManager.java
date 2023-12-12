@@ -49,4 +49,17 @@ public class ConnectionManager {
         for (var user:removes)
             connectionConcurrentHashMap.remove(user.username);
     }
+
+    public void broadcastALL(String name, NotificationMessage notificationMessage) throws IOException {
+        var removes = new ArrayList<Connection>();
+        for (Connection connection: connectionConcurrentHashMap.values()){
+            if (connection.session.isOpen())
+                connection.send(new Gson().toJson(notificationMessage));
+            else
+                removes.add(connection);
+        }
+        for (var c: removes){
+            connectionConcurrentHashMap.remove(c.username);
+        }
+    }
 }

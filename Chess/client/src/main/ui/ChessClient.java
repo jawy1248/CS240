@@ -413,12 +413,14 @@ public class ChessClient implements NotificationHandler {
         if(chessGame.isInCheckmate(teamColor))
             return "In checkmate";
 
-        chessGame.makeMove(move);
-        MakeMove command = new MakeMove(gameID, authToken, username, move);
-
-        ws.send(command);
-        updateBoard(chessGame);
-
+        try {
+            chessGame.makeMove(move);
+            MakeMove command = new MakeMove(gameID, authToken, username, move);
+            ws.send(command);
+            updateBoard(chessGame);
+        } catch(InvalidMoveException e){
+            System.out.print("You cannot make that move");
+        }
         return "";
     }
 

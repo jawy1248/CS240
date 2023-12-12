@@ -31,15 +31,13 @@ public class webSocketClient extends Endpoint {
             public void onMessage(String message) {
                 try{
                     ServerMessage serverTalk = new Gson().fromJson(message, ServerMessage.class);
+                    GsonBuilder gsonBuilder = new GsonBuilder();
+                    gsonBuilder.registerTypeAdapter(ChessBoard.class, new ChessBoardAdapter());
+                    Gson gson = gsonBuilder.create();
                     switch (serverTalk.getServerMessageType()) {
-                        case LOAD_GAME:
-                            notificationHandler.updateBoard(deserializeBoard(message));
-
-                        case NOTIFICATION:
-                            notificationHandler.message(new Gson().fromJson(message, NotificationMessage.class).message);
-
-                        case ERROR:
-                            notificationHandler.error(new Gson().fromJson(message, ErrorMessage.class).toString());
+                        case LOAD_GAME -> notificationHandler.updateBoard(gson.fromJson(message, ChessGame.class));
+                        case NOTIFICATION -> notificationHandler.message(gson.fromJson(message, NotificationMessage.class).message);
+                        case ERROR -> notificationHandler.error(gson.fromJson(message, ErrorMessage.class).toString());
                     }
                 }catch (Exception e){
                     throw new RuntimeException(e);
