@@ -379,7 +379,7 @@ public class ChessClient implements NotificationHandler {
 
         ChessPosition posStart = getPos(pos1Str);
         ChessPosition posEnd = getPos(pos2Str);
-        ChessMove move = new Move(posStart, posEnd, null);
+        ChessMove move = new Move(posStart, posEnd);
 
         if(chessGame.validMoves(posStart) == null || !chessGame.validMoves(posStart).contains(move))
             return "Invalid Move";
@@ -391,9 +391,9 @@ public class ChessClient implements NotificationHandler {
             return "In checkmate";
 
         chessGame.makeMove(move);
-        MakeMove comm = new MakeMove(gameID, authToken, username, move);
+        MakeMove command = new MakeMove(gameID, authToken, username, move);
 
-        ws.send(comm);
+        ws.send(command);
         updateBoard(chessGame);
 
         return "";

@@ -15,16 +15,18 @@ public class Move implements ChessMove {
         this.promo = promotionPiece;
     }
 
+    public Move(ChessPosition startPosition, ChessPosition endPosition){
+        this.initPos = startPosition;
+        this.endPos = endPosition;
+    }
+
     @Override
     public ChessPosition getStartPosition() {
         return initPos;
     }
 
     @Override
-    public ChessPosition getEndPosition() {
-//        System.out.println(endPos);
-        return endPos;
-    }
+    public ChessPosition getEndPosition() { return endPos; }
 
     @Override
     public ChessPiece.PieceType getPromotionPiece() {
