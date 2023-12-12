@@ -17,6 +17,7 @@ public class ConnectionManager {
         if (!connectionConcurrentHashMap.contains(connection))
             connectionConcurrentHashMap.put(username,connection);
     }
+
     public void remove(String username){
         connectionConcurrentHashMap.remove(username);
     }
@@ -27,12 +28,12 @@ public class ConnectionManager {
             if (connection.session.isOpen()){
                 if (!connection.username.equals(name))
                     connection.send(new Gson().toJson(notificationMessage));
-            }else
+            } else {
                 removes.add(connection);
+            }
         }
         for (var user:removes)
             connectionConcurrentHashMap.remove(user.username);
-
     }
 
     public void broadcastBoard(String name, LoadMessage loadMessage) throws IOException {
@@ -41,21 +42,9 @@ public class ConnectionManager {
             if (connection.session.isOpen()){
                 if (!connection.username.equals(name))
                     connection.send(new Gson().toJson(loadMessage));
-            }else
+            } else {
                 removes.add(connection);
-        }
-        for (var user:removes)
-            connectionConcurrentHashMap.remove(user.username);
-
-    }
-
-    public void broadcastALL(String name, NotificationMessage notificationMessage) throws IOException {
-        var removes = new ArrayList<Connection>();
-        for (Connection connection: connectionConcurrentHashMap.values()){
-            if (connection.session.isOpen())
-                connection.send(new Gson().toJson(notificationMessage));
-            else
-                removes.add(connection);
+            }
         }
         for (var user:removes)
             connectionConcurrentHashMap.remove(user.username);

@@ -1,12 +1,9 @@
 package ws;
 
-import model.Auth_Record;
-import model.Game_Record;
+import model.*;
 import chess.*;
+import dataAccess.*;
 import com.google.gson.*;
-import dataAccess.Auth_DAO;
-import dataAccess.Database;
-import dataAccess.Game_DAO;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
@@ -24,31 +21,34 @@ import java.util.Objects;
 
 @WebSocket
 public class WSHANDLER {
+    Database db = new Database();
     Auth_DAO authDAO;
     Game_DAO gameDAO;
     Connection connection;
-
-    Database db = new Database();
-    Game gameSave;
-
+    ChessGame gameSave;
+    public final ws.ConnectionManager connectionManager = new ConnectionManager();
 
     public WSHANDLER(Connection connection){
         this.connection = connection;
     }
-    public final ws.ConnectionManager connectionManager = new ConnectionManager();
 
     @OnWebSocketMessage
     public void onMessage(Session session, String message) throws Exception {
-        System.out.println(message);
+        // Get connection to database
         connection = db.getConnection();
         authDAO = new Auth_DAO(connection);
         gameDAO = new Game_DAO(connection);
+
+        // Pull out the command
         UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
-        System.out.println("COMMAND TYPE " + command.getCommandType());
+
+        // Adapt for position and move classes
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(ChessPosition.class, new PosAdapter());
         gsonBuilder.registerTypeAdapter(ChessMove.class, new MoveAdapter());
         Gson gson = gsonBuilder.create();
+
+        // Send command to the correct function
         switch (command.getCommandType()) {
             case JOIN_PLAYER -> join(session, new Gson().fromJson(message, JoinPlayer.class));
             case JOIN_OBSERVER -> observe(session, new Gson().fromJson(message, JoinObserver.class));
@@ -59,37 +59,40 @@ public class WSHANDLER {
     }
 
     public void join(Session session, JoinPlayer command) throws IOException {
+        // Open databases and get game and auth of user
         Game_Record game = gameDAO.findGame(Integer.parseInt(command.getGameID()));
         Auth_Record tokenModel= authDAO.findAuth(command.getAuthString());
+
+        // Set the username from the authKey
         String username = null;
-        if (tokenModel != null){
+        if (tokenModel != null)
             username = tokenModel.username();
-        }
+
+        // Check authorization
         if (authDAO.findAuth(command.getAuthString()) == null){
-            ErrorMessage errorMessage = new ErrorMessage("");
-            errorMessage.errorMessage = "Error: Unauthorized";
+            ErrorMessage errorMessage = new ErrorMessage("Error: Unauthorized");
             session.getRemote().sendString(new Gson().toJson(errorMessage));
         }
+        // Check the game exists
         else if (game == null){
-            ErrorMessage errorMessage = new ErrorMessage("");
-            errorMessage.errorMessage = "Error: Game does not exist";
+            ErrorMessage errorMessage = new ErrorMessage("Error: Game does not exist");
             session.getRemote().sendString(new Gson().toJson(errorMessage));
         }
+        // Check the color is valid
         else if (command.getPlayerColor() == null){
-            ErrorMessage errorMessage = new ErrorMessage("");
-            errorMessage.errorMessage = "Error: No player color";
+            ErrorMessage errorMessage = new ErrorMessage("Error: No player color");
             session.getRemote().sendString(new Gson().toJson(errorMessage));
         }
-        else if (command.getPlayerColor() == ChessGame.TeamColor.WHITE && !Objects.equals(game.whiteUsername(), username)){
-            ErrorMessage errorMessage = new ErrorMessage("");
-            errorMessage.errorMessage = "Error: Not your turn";
+        // Check to make sure it is white/black
+        else if (command.getPlayerColor() == ChessGame.TeamColor.WHITE && !game.whiteUsername().equals(username)){
+            ErrorMessage errorMessage = new ErrorMessage("Error: Tried to join invalid white");
             session.getRemote().sendString(new Gson().toJson(errorMessage));
         }
-        else if (command.getPlayerColor() == ChessGame.TeamColor.BLACK && !Objects.equals(game.blackUsername(), username)){
-            ErrorMessage errorMessage = new ErrorMessage("");
-            errorMessage.errorMessage = "Error: Not your turn";
+        else if (command.getPlayerColor() == ChessGame.TeamColor.BLACK && !game.blackUsername().equals(username)){
+            ErrorMessage errorMessage = new ErrorMessage("Error: Tried to join invalid black");
             session.getRemote().sendString(new Gson().toJson(errorMessage));
         }
+        // Now do actual join logic
         else {
             if (command.getPlayerColor() == ChessGame.TeamColor.WHITE){
                 game.setWhiteUsername(username);
@@ -98,110 +101,141 @@ public class WSHANDLER {
                 game.setBlackUsername(username);
                 gameDAO.updateBlack(username,command.getGameID());
             }
+
+            // Send message to others in database
             LoadMessage loadMessage = new LoadMessage(game.game());
             session.getRemote().sendString(new Gson().toJson(loadMessage));
+
+            // Add them to the list of connections and broadcast it
+            String message = (command.getUsername() + " joined as " + command.getPlayerColor());
+            NotificationMessage notificationMessage = new NotificationMessage(message);
             connectionManager.add(username, session);
-            String message = (command.getUsername() + " joined as " + command.getPlayerColor() + "\n>>> ");
-            NotificationMessage notificationMessage = new NotificationMessage("");
-            notificationMessage.message = message;
             connectionManager.broadcast(username, notificationMessage);
         }
     }
+
     public void observe(Session session, JoinObserver command) throws IOException {
+        // Open databases and get game and auth of user
         Game_Record game = gameDAO.findGame(Integer.parseInt(command.getGameID()));
         Auth_Record tokenModel= authDAO.findAuth(command.getAuthString());
+
+        // Set the username from the authKey
         String username = null;
         if (tokenModel != null)
             username = tokenModel.username();
+
+        // Check authorization
         if (authDAO.findAuth(command.getAuthString()) == null){
-            ErrorMessage errorMessage = new ErrorMessage("");
-            errorMessage.errorMessage = "Error: Unauthorized";
+            ErrorMessage errorMessage = new ErrorMessage("Error: Unauthorized");
             session.getRemote().sendString(new Gson().toJson(errorMessage));
         }
+        // Make sure the game exists
         else if (game == null){
-            ErrorMessage errorMessage = new ErrorMessage("");
-            errorMessage.errorMessage = "Error: Game does not exist";
+            ErrorMessage errorMessage = new ErrorMessage("Error: Game does not exist");
             session.getRemote().sendString(new Gson().toJson(errorMessage));
         }
+        // Do the actual logic
         else{
+            // Send the load message to the session
             LoadMessage loadMessage = new LoadMessage(game.game());
             session.getRemote().sendString(new Gson().toJson(loadMessage));
+
+            // Add them to the list of connections and broadcast it
+            String message = (username + " joined as an observer");
+            NotificationMessage notificationMessage = new NotificationMessage(message);
             connectionManager.add(username, session);
-            String message = (username + " joined as an observer" + "\n>>>");
-            NotificationMessage notificationMessage = new NotificationMessage("");
-            notificationMessage.message = message;
             connectionManager.broadcast(username, notificationMessage);
         }
-
     }
+
     public void move(Session session, MakeMove command) throws InvalidMoveException, IOException {
+        // Open databases and get game
         Game_Record game = gameDAO.findGame(Integer.parseInt(command.getGameID()));
+
+        // Make sure the game exists
         if (game == null){
-            ErrorMessage errorMessage = new ErrorMessage("");
-            errorMessage.errorMessage = "Error: Game does not exist";
+            ErrorMessage errorMessage = new ErrorMessage("Error: Game does not exist");
             session.getRemote().sendString(new Gson().toJson(errorMessage));
-        }else{
-            gameSave = (Game) game.game();
-            Auth_Record tokenModel= authDAO.findAuth(command.getAuthString());
+        }
+        // Move to the move logic
+        else{
+            // Open databases and get auth of user
+            gameSave = game.game();
+            Auth_Record tokenModel = authDAO.findAuth(command.getAuthString());
+
+            // Set the username from the authKey
             String username = null;
-            if (tokenModel!= null)
+            if (tokenModel != null)
                 username = tokenModel.username();
 
+            // Get valid moves
             Collection<ChessMove> moves = gameSave.validMoves(command.getMove().getStartPosition());
+
+            // Make sure there are moves
             if (moves == null){
-                System.out.println("Null moves");
-                ErrorMessage errorMessage = new ErrorMessage("error: That game doesn't exist");
-                errorMessage.errorMessage ="Error there is no color";
+                ErrorMessage errorMessage = new ErrorMessage("Error: No valid moves");
                 session.getRemote().sendString(new Gson().toJson(errorMessage));
             }
-            else if (!Objects.equals(game.whiteUsername(), username) && !Objects.equals(game.blackUsername(), username)){
-                System.out.println("white usernames");
-                ErrorMessage errorMessage = new ErrorMessage("error: That game doesn't exist");
-                errorMessage.errorMessage ="Error there is no color";
+            // Check the user is either black or white
+            else if (!game.whiteUsername().equals(username) && !game.blackUsername().equals(username)){
+                ErrorMessage errorMessage = new ErrorMessage("Error: Unauthorized");
                 session.getRemote().sendString(new Gson().toJson(errorMessage));
-            } else if (gameSave.getTeamTurn() == ChessGame.TeamColor.WHITE && !Objects.equals(game.whiteUsername(), username)) {
-                ErrorMessage errorMessage = new ErrorMessage("error: That game doesn't exist");
-                errorMessage.errorMessage ="Error there is no color";
+            }
+            // Make sure it is the correct players turn (white)
+            else if (gameSave.getTeamTurn() == ChessGame.TeamColor.WHITE && !game.whiteUsername().equals(username)) {
+                ErrorMessage errorMessage = new ErrorMessage("Error: White playing out of order");
                 session.getRemote().sendString(new Gson().toJson(errorMessage));
-            } else if (gameSave.getTeamTurn() == ChessGame.TeamColor.BLACK && !Objects.equals(game.blackUsername(), username)) {
-                ErrorMessage errorMessage = new ErrorMessage("error: That game doesn't exist");
-                errorMessage.errorMessage = "Error there is no color";
+            }
+            // Make sure it is the correct players turn (black)
+            else if (gameSave.getTeamTurn() == ChessGame.TeamColor.BLACK && !game.blackUsername().equals(username)) {
+                ErrorMessage errorMessage = new ErrorMessage("Error: Black playing out of order");
                 session.getRemote().sendString(new Gson().toJson(errorMessage));
-            }else if (moves.contains(command.getMove())){
-                System.out.println("making move");
+            }
+            // If the requested move is in the valid move list
+            else if (moves.contains(command.getMove())){
+                // Make the move to the game, and update the game in the database
                 gameSave.makeMove(command.getMove());
                 gameDAO.update(gameSave, command.getGameID());
+
+                // Send the Load Message
                 LoadMessage loadMessage = new LoadMessage(gameSave);
                 session.getRemote().sendString(new Gson().toJson(loadMessage));
+
+                // Send notification to others in game
+                NotificationMessage notificationMessage = new NotificationMessage("Move made");
                 connectionManager.broadcastBoard(username, loadMessage);
-                NotificationMessage notificationMessage = new NotificationMessage("Gay");
-                notificationMessage.message = "Move made";
-                connectionManager.broadcast(username,notificationMessage);
+                connectionManager.broadcast(username, notificationMessage);
             }
+            // If the requested move is not in the valid move list
             else{
-                ErrorMessage errorMessage = new ErrorMessage("error: That game doesn't exist");
-                errorMessage.errorMessage = "Error there is no color";
+                ErrorMessage errorMessage = new ErrorMessage("Error: Invalid move");
                 session.getRemote().sendString(new Gson().toJson(errorMessage));
             }
         }
-
-
     }
+
     public void leave(Session session, Leave command) throws IOException {
+        // Open databases and get game
         Game_Record game = gameDAO.findGame(Integer.parseInt(command.getGameID()));
+
+        // Check if the game exists
         if (gameDAO.findGame(Integer.parseInt(command.getGameID())) == null){
-            ErrorMessage errorMessage = new ErrorMessage("error: That game doesn't exist");
-            errorMessage.errorMessage = "Error there is no color";
+            ErrorMessage errorMessage = new ErrorMessage("Error: The game does not exist");
             session.getRemote().sendString(new Gson().toJson(errorMessage));
             return;
         }
-        gameSave = (Game) game.game();
+
+        // Open databases and get auth of user
+        gameSave = game.game();
         Auth_Record tokenModel= authDAO.findAuth(command.getAuthString());
+
+        // Set the username from the authKey
         String username = null;
-        if (tokenModel!= null){
+        if (tokenModel!= null)
             username = tokenModel.username();
-        }
-        if (Objects.equals(game.blackUsername(), username)){
+
+        // Removes the user from the game
+        if (game.blackUsername().equals(username)){
             game.setBlackUsername(null);
             gameDAO.updateBlack(username, command.getGameID());
         }
@@ -209,57 +243,64 @@ public class WSHANDLER {
             game.setWhiteUsername(null);
             gameDAO.updateWhite(username, command.getGameID());
         }
+
+        // Remove them from the list of connections and broadcast it
         String message = (username + " has left the game");
         NotificationMessage notificationMessage = new NotificationMessage(message);
-        notificationMessage.message = message;
-        connectionManager.broadcast(username, notificationMessage);
         connectionManager.remove(username);
+        connectionManager.broadcast(username, notificationMessage);
     }
     public void resign(Session session, Resign command) throws IOException {
+        // Open databases and get game
         Game_Record game = gameDAO.findGame(Integer.parseInt(command.getGameID()));
+
+        // Make sure the game exists
         if (game == null){
-            ErrorMessage errorMessage = new ErrorMessage("error: That game doesn't exist");
-            errorMessage.errorMessage ="Error there is no color";
+            ErrorMessage errorMessage = new ErrorMessage("Error: The game does not exist");
             session.getRemote().sendString(new Gson().toJson(errorMessage));
-        }else {
-            gameSave = (Game) game.game();
+        }
+        // Start the resignation logic
+        else {
+            // Open databases and get auth of user
+            gameSave = game.game();
             Auth_Record tokenModel= authDAO.findAuth(command.getAuthString());
+
+            // Set the username from the authKey
             String username = null;
-            if (tokenModel!= null){
+            if (tokenModel!= null)
                 username = tokenModel.username();
-            }
-            if (Objects.equals(game.blackUsername(), username)){
+
+            // If the user is in the game, delete the game
+            if (game.whiteUsername().equals(username) || game.blackUsername().equals(username))
                 gameDAO.delete(command.getGameID());
-            }
-            if (Objects.equals(game.whiteUsername(), username)){
-                gameDAO.delete(command.getGameID());
-            }
-            if (!Objects.equals(game.blackUsername(), username) && !Objects.equals(game.whiteUsername(), username)){
-                ErrorMessage errorMessage = new ErrorMessage("error: That game doesn't exist");
-                errorMessage.errorMessage ="Error there is no color";
+
+            // Check if the user is in the game
+            if (!game.whiteUsername().equals(username) && !game.blackUsername().equals(username)){
+                ErrorMessage errorMessage = new ErrorMessage("Error: Unauthorized");
                 session.getRemote().sendString(new Gson().toJson(errorMessage));
-            }else{
+            }
+            // Send the message they left the game
+            else{
+                // Remove them from the list and send the notification
                 String message = (username + " has left the game");
                 NotificationMessage notificationMessage = new NotificationMessage(message);
-                notificationMessage.message = message;
-                connectionManager.broadcastALL(username, notificationMessage);
                 connectionManager.remove(username);
+                connectionManager.broadcast(username, notificationMessage);
             }
         }
     }
 
+    // Adapters for the Position and Move class
     static class PosAdapter implements JsonDeserializer<ChessPosition> {
         @Override
         public ChessPosition deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
             return jsonDeserializationContext.deserialize(jsonElement,Position.class);
         }
     }
-
     static class MoveAdapter implements JsonDeserializer<ChessMove> {
         @Override
         public ChessMove deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
             return jsonDeserializationContext.deserialize(jsonElement,Move.class);
         }
     }
-
 }
