@@ -132,7 +132,6 @@ public class ServerFacade {
 
         int code = connection.getResponseCode();
         if(code == 200) {
-            connection.connect();
             try(InputStream respBody = connection.getInputStream()){
                 InputStreamReader reader = new InputStreamReader(respBody);
                 resp = new Gson().fromJson(reader, CreateGame_Resp.class);

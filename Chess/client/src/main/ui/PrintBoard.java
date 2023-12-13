@@ -69,7 +69,7 @@ public class PrintBoard {
         for (int i = 0; i < 8; i++) {
             System.out.print(SET_BG_COLOR_LIGHT_GREY);
             char x = (char) ('a' + i);
-            System.out.print( x+ "  " );
+            System.out.print(x + "  " );
         }
         System.out.print(SET_BG_COLOR_LIGHT_GREY);
         System.out.print("  ");
@@ -328,13 +328,13 @@ public class PrintBoard {
     }
 
     public void updateUIBoard(ChessGame game){
-        Board boardNEW = (Board) game.getBoard();
+        Board tempBoard = (Board) game.getBoard();
         for(int i=1; i<9; i++){
             for(int j=1; j<9; j++){
-                if (boardNEW.getBoard()[i][j] == null)
+                ChessPiece tempPiece = tempBoard.getBoard()[i][j];
+                if (tempPiece == null)
                     board[i-1][j-1] = EMPTY;
                 else {
-                    ChessPiece tempPiece = boardNEW.getBoard()[i][j];
                     PieceType tempType = tempPiece.getPieceType();
                     TeamColor tempColor = tempPiece.getTeamColor();
 
@@ -344,8 +344,8 @@ public class PrintBoard {
                             case KNIGHT -> board[i - 1][j - 1] = WHITE_KNIGHT;
                             case ROOK -> board[i - 1][j - 1] = WHITE_ROOK;
                             case BISHOP -> board[i - 1][j - 1] = WHITE_BISHOP;
-                            case KING -> board[i - 1][j - 1] = WHITE_KING;
                             case QUEEN -> board[i - 1][j - 1] = WHITE_QUEEN;
+                            case KING -> board[i - 1][j - 1] = WHITE_KING;
                         }
                     } else {
                         switch (tempType) {
@@ -353,8 +353,8 @@ public class PrintBoard {
                             case KNIGHT -> board[i - 1][j - 1] = BLACK_KNIGHT;
                             case ROOK -> board[i - 1][j - 1] = BLACK_ROOK;
                             case BISHOP -> board[i - 1][j - 1] = BLACK_BISHOP;
-                            case KING -> board[i - 1][j - 1] = BLACK_KING;
                             case QUEEN -> board[i - 1][j - 1] = BLACK_QUEEN;
+                            case KING -> board[i - 1][j - 1] = BLACK_KING;
                         }
                     }
                 }

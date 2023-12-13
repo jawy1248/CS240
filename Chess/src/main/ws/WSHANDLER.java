@@ -25,7 +25,7 @@ public class WSHANDLER {
     Auth_DAO authDAO;
     Game_DAO gameDAO;
     Connection connection;
-    ChessGame gameSave;
+    Game gameSave;
     public final ws.ConnectionManager connectionManager = new ConnectionManager();
 
     public WSHANDLER(Connection connection){
@@ -103,13 +103,13 @@ public class WSHANDLER {
             }
 
             // Send message to others in database
-            LoadMessage loadMessage = new LoadMessage(game.game());
+            LoadMessage loadMessage = new LoadMessage((Game) game.game());
             session.getRemote().sendString(new Gson().toJson(loadMessage));
+            connectionManager.add(username, session);
 
             // Add them to the list of connections and broadcast it
             String message = (command.getUsername() + " joined as " + command.getPlayerColor());
             NotificationMessage notificationMessage = new NotificationMessage(message);
-            connectionManager.add(username, session);
             connectionManager.broadcast(username, notificationMessage);
         }
     }
@@ -137,7 +137,7 @@ public class WSHANDLER {
         // Do the actual logic
         else{
             // Send the load message to the session
-            LoadMessage loadMessage = new LoadMessage(game.game());
+            LoadMessage loadMessage = new LoadMessage((Game) game.game());
             session.getRemote().sendString(new Gson().toJson(loadMessage));
 
             // Add them to the list of connections and broadcast it
@@ -160,7 +160,7 @@ public class WSHANDLER {
         // Move to the move logic
         else{
             // Open databases and get auth of user
-            gameSave = game.game();
+            gameSave = (Game) game.game();
             Auth_Record tokenModel = authDAO.findAuth(command.getAuthString());
 
             // Set the username from the authKey
@@ -226,7 +226,7 @@ public class WSHANDLER {
         }
 
         // Open databases and get auth of user
-        gameSave = game.game();
+        gameSave = (Game) game.game();
         Auth_Record tokenModel= authDAO.findAuth(command.getAuthString());
 
         // Set the username from the authKey
@@ -262,7 +262,7 @@ public class WSHANDLER {
         // Start the resignation logic
         else {
             // Open databases and get auth of user
-            gameSave = game.game();
+            gameSave = (Game) game.game();
             Auth_Record tokenModel= authDAO.findAuth(command.getAuthString());
 
             // Set the username from the authKey

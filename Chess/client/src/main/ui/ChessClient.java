@@ -149,7 +149,12 @@ public class ChessClient implements NotificationHandler {
                         return "[IN_GAME]";
                     }
                     if(commandIN.contains("redraw")) {
-                        updateBoard(chessGame);
+                        if (color == null)
+                            PrintBoard.printWhite();
+                        else if (color.equalsIgnoreCase("BLACK"))
+                            PrintBoard.printBlack();
+                        else
+                            PrintBoard.printWhite();
                         return "[IN_GAME]";
                     }
                     if(commandIN.contains("leave")) {
@@ -172,7 +177,12 @@ public class ChessClient implements NotificationHandler {
                         return "Exiting the program";
                     }
                     if(commandIN.contains("redraw")) {
-                        updateBoard(chessGame);
+                        if (color == null)
+                            PrintBoard.printWhite();
+                        else if (color.equalsIgnoreCase("BLACK"))
+                            PrintBoard.printBlack();
+                        else
+                            PrintBoard.printWhite();
                         return "[IN_GAME]";
                     }
                     if(commandIN.contains("list")) {
@@ -329,21 +339,17 @@ public class ChessClient implements NotificationHandler {
             gameID = com[1];
             color = com[2];
 
-            chessGame = new Game();
-            chessBoard = new Board();
-            chessBoard.resetBoard();
-            chessGame.setBoard(chessBoard);
+//            chessGame = new Game();
+//            chessBoard = new Board();
+//            chessBoard.resetBoard();
+//            chessGame.setBoard(chessBoard);
 
-            if(color.equalsIgnoreCase("WHITE")) {
+            if(color.equalsIgnoreCase("WHITE"))
                 teamColor = ChessGame.TeamColor.WHITE;
-                updateBoard(chessGame);
-            }
-            else {
+            else
                 teamColor = ChessGame.TeamColor.BLACK;
-                updateBoard(chessGame);
-            }
 
-            JoinPlayer comm = new JoinPlayer(com[1], teamColor, username, authToken);
+            JoinPlayer comm = new JoinPlayer(gameID, teamColor, username, authToken);
             ws.send(comm);
 
             return "Successfully joined game " + gameID + " as player: " + teamColor;
@@ -414,9 +420,9 @@ public class ChessClient implements NotificationHandler {
 
         try {
             chessGame.makeMove(move);
+            updateBoard(chessGame);
             MakeMove command = new MakeMove(gameID, authToken, username, move);
             ws.send(command);
-            updateBoard(chessGame);
         } catch(InvalidMoveException e){
             System.out.print("You cannot make that move");
         }
@@ -448,13 +454,14 @@ public class ChessClient implements NotificationHandler {
     @Override
     public void updateBoard(ChessGame game) {
         chessGame = game;
-        board.updateUIBoard(game);
-        if (color == null)
+        board.updateUIBoard(chessGame);
+        System.out.println();
+        if (color == null || color.equalsIgnoreCase("WHITE"))
             PrintBoard.printWhite();
-        else if (color.equalsIgnoreCase("BLACK"))
-            PrintBoard.printBlack();
         else
-            PrintBoard.printWhite();
+            PrintBoard.printBlack();
+        System.out.println();
+        System.out.print("[IN_GAME] >>> ");
     }
 
     @Override
