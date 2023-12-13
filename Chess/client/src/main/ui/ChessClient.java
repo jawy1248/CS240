@@ -123,7 +123,7 @@ public class ChessClient implements NotificationHandler {
                     String temp = join(length);
                     System.out.println(temp);
 
-                    if(temp.equals("Failed to join"))
+                    if(temp.equals("Failed to join") || temp.equals("ERROR - To join game, provide only gameID and team color") || temp.equals("ERROR - Please select either 'white' or 'black'"))
                         return "[LOGGED_IN]";
 
                     return "[IN_GAME]";
@@ -319,6 +319,8 @@ public class ChessClient implements NotificationHandler {
     public String join(String[] com) throws Exception{
         if(com.length != 3)
             return "ERROR - To join game, provide only gameID and team color";
+        if(!(com[2].equalsIgnoreCase("WHITE") || com[2].equalsIgnoreCase("BLACK")))
+            return "ERROR - Please select either 'white' or 'black'";
 
         Response resp = serverFacade.join(com[1], com[2]);
         if(resp.getCode() == 200) {
@@ -445,8 +447,7 @@ public class ChessClient implements NotificationHandler {
 
     @Override
     public void updateBoard(ChessGame game) {
-        System.out.println("-----GETTING HERE-----");
-        this.chessGame = game;
+        chessGame = game;
         board.updateUIBoard(game);
         if (color == null)
             PrintBoard.printWhite();
