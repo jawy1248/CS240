@@ -361,7 +361,7 @@ public class ChessClient implements NotificationHandler {
             playing = false;
             gameID = com[1];
 
-            board.printWhite();
+            PrintBoard.printWhite();
 
             JoinObserver comm = new JoinObserver(UserGameCommand.CommandType.JOIN_OBSERVER, authToken, gameID, username);
             ws.send(comm);
@@ -382,9 +382,9 @@ public class ChessClient implements NotificationHandler {
         ChessPosition pos = getPos(com[1]);
         Collection<ChessMove> moves = chessGame.validMoves(pos);
         if(color.equalsIgnoreCase("WHITE"))
-            board.whiteMoves(moves);
+            PrintBoard.whiteMoves(moves);
         else
-            board.blackMoves(moves);
+            PrintBoard.blackMoves(moves);
 
         return "";
     }
@@ -409,9 +409,6 @@ public class ChessClient implements NotificationHandler {
 
         if(chessGame.isInCheck(teamColor))
             System.out.println("In check");
-
-//        if(chessGame.isInCheckmate(teamColor))
-//            return "In checkmate";
 
         try {
             chessGame.makeMove(move);
@@ -448,14 +445,15 @@ public class ChessClient implements NotificationHandler {
 
     @Override
     public void updateBoard(ChessGame game) {
+        System.out.println("-----GETTING HERE-----");
         this.chessGame = game;
         board.updateUIBoard(game);
         if (color == null)
-            board.printWhite();
+            PrintBoard.printWhite();
         else if (color.equalsIgnoreCase("BLACK"))
-            board.printBlack();
+            PrintBoard.printBlack();
         else
-            board.printWhite();
+            PrintBoard.printWhite();
     }
 
     @Override
