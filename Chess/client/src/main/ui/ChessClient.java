@@ -410,8 +410,8 @@ public class ChessClient implements NotificationHandler {
         if(chessGame.isInCheck(teamColor))
             System.out.println("In check");
 
-        if(chessGame.isInCheckmate(teamColor))
-            return "In checkmate";
+//        if(chessGame.isInCheckmate(teamColor))
+//            return "In checkmate";
 
         try {
             chessGame.makeMove(move);
@@ -437,11 +437,6 @@ public class ChessClient implements NotificationHandler {
     public void resign() throws Exception {
         Resign com = new Resign(UserGameCommand.CommandType.RESIGN, authToken, gameID, username);
         ws.send(com);
-
-        playing = false;
-        joined = false;
-        gameID = null;
-        color = null;
     }
 
     // Gets position from string

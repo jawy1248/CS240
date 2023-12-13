@@ -13,8 +13,6 @@ import java.sql.Connection;
  */
 public class JoinGameHand {
     public static String handle(spark.Request request, spark.Response response) {
-        System.out.println("Join Game Handler");
-
         Gson gson = new Gson();
         String temp = request.body();
         JoinGame_Req join = gson.fromJson(temp, JoinGame_Req.class);

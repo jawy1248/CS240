@@ -12,8 +12,6 @@ import java.sql.Connection;
  */
 public class LogoutHand {
     public static String handle(spark.Request request, spark.Response response) {
-        System.out.println("Logout Handler");
-
         Gson gson = new Gson();
         String authToken = request.headers("Authorization");
 

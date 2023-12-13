@@ -13,8 +13,6 @@ import java.sql.Connection;
  */
 public class RegisterHand {
     public static String handle(spark.Request request, spark.Response response) {
-        System.out.println("Register Handler");
-
         Gson gson = new Gson();
         String temp = request.body();
         Register_Req requested = gson.fromJson(temp, Register_Req.class);

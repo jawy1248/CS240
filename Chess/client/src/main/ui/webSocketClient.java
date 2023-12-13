@@ -32,7 +32,7 @@ public class webSocketClient extends Endpoint {
                 try{
                     ServerMessage serverTalk = new Gson().fromJson(message, ServerMessage.class);
                     GsonBuilder gsonBuilder = new GsonBuilder();
-                    gsonBuilder.registerTypeAdapter(ChessBoard.class, new ChessBoardAdapter());
+                    gsonBuilder.registerTypeAdapter(ChessBoard.class, new ChessGameAdapter());
                     Gson gson = gsonBuilder.create();
                     switch (serverTalk.getServerMessageType()) {
                         case LOAD_GAME -> notificationHandler.updateBoard(gson.fromJson(message, ChessGame.class));
@@ -52,14 +52,7 @@ public class webSocketClient extends Endpoint {
     @Override
     public void onOpen(javax.websocket.Session session, EndpointConfig endpointConfig) {}
 
-    public ChessGame deserializeBoard(String gameString) {
-        GsonBuilder gsonBuilder = new GsonBuilder();
-        gsonBuilder.registerTypeAdapter(ChessBoard.class, new ChessBoardAdapter());
-        Gson gson = gsonBuilder.create();
-        return gson.fromJson(gameString, ChessGame.class);
-    }
-
-    public static class ChessBoardAdapter implements JsonDeserializer<ChessBoard> {
+    public static class ChessGameAdapter implements JsonDeserializer<ChessBoard> {
         public ChessBoard deserialize(JsonElement el, Type type, JsonDeserializationContext ctx) throws JsonParseException {
             GsonBuilder gsonBuilder = new GsonBuilder();
             gsonBuilder.registerTypeAdapter(ChessPiece.class, new ChessPieceAdapter());

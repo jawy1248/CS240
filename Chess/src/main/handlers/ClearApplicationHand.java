@@ -9,8 +9,6 @@ import java.sql.Connection;
  */
 public class ClearApplicationHand {
     public static String handle(spark.Request request, spark.Response response){
-        System.out.println("Clear Handler");
-
         // Get database and connection to SQL
         Database db = new Database();
         try {

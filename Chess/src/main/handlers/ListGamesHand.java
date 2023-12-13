@@ -12,8 +12,6 @@ import java.sql.Connection;
  */
 public class ListGamesHand {
     public static String handle(spark.Request request, spark.Response response) {
-        System.out.println("List Games Handler");
-
         Gson gson = new Gson();
         String authToken = request.headers("Authorization");
 

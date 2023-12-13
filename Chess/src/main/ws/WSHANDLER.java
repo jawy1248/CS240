@@ -84,11 +84,11 @@ public class WSHANDLER {
             session.getRemote().sendString(new Gson().toJson(errorMessage));
         }
         // Check to make sure it is white/black
-        else if (command.getPlayerColor() == ChessGame.TeamColor.WHITE && !game.whiteUsername().equals(username)){
+        else if (command.getPlayerColor() == ChessGame.TeamColor.WHITE && !Objects.equals(game.whiteUsername(), username)){
             ErrorMessage errorMessage = new ErrorMessage("Error: Tried to join invalid white");
             session.getRemote().sendString(new Gson().toJson(errorMessage));
         }
-        else if (command.getPlayerColor() == ChessGame.TeamColor.BLACK && !game.blackUsername().equals(username)){
+        else if (command.getPlayerColor() == ChessGame.TeamColor.BLACK && !Objects.equals(game.blackUsername(), username)){
             ErrorMessage errorMessage = new ErrorMessage("Error: Tried to join invalid black");
             session.getRemote().sendString(new Gson().toJson(errorMessage));
         }
@@ -177,17 +177,17 @@ public class WSHANDLER {
                 session.getRemote().sendString(new Gson().toJson(errorMessage));
             }
             // Check the user is either black or white
-            else if (!game.whiteUsername().equals(username) && !game.blackUsername().equals(username)){
+            else if (!Objects.equals(game.whiteUsername(), username) && !Objects.equals(game.blackUsername(), username)){
                 ErrorMessage errorMessage = new ErrorMessage("Error: Unauthorized");
                 session.getRemote().sendString(new Gson().toJson(errorMessage));
             }
             // Make sure it is the correct players turn (white)
-            else if (gameSave.getTeamTurn() == ChessGame.TeamColor.WHITE && !game.whiteUsername().equals(username)) {
+            else if (gameSave.getTeamTurn() == ChessGame.TeamColor.WHITE && !Objects.equals(game.whiteUsername(), username)) {
                 ErrorMessage errorMessage = new ErrorMessage("Error: White playing out of order");
                 session.getRemote().sendString(new Gson().toJson(errorMessage));
             }
             // Make sure it is the correct players turn (black)
-            else if (gameSave.getTeamTurn() == ChessGame.TeamColor.BLACK && !game.blackUsername().equals(username)) {
+            else if (gameSave.getTeamTurn() == ChessGame.TeamColor.BLACK && !Objects.equals(game.blackUsername(), username)) {
                 ErrorMessage errorMessage = new ErrorMessage("Error: Black playing out of order");
                 session.getRemote().sendString(new Gson().toJson(errorMessage));
             }
@@ -235,13 +235,13 @@ public class WSHANDLER {
             username = tokenModel.username();
 
         // Removes the user from the game
-        if (game.blackUsername().equals(username)){
+        if (Objects.equals(game.blackUsername(), username)){
             game.setBlackUsername(null);
-            gameDAO.updateBlack(username, command.getGameID());
+            gameDAO.updateBlack(null, command.getGameID());
         }
         if (Objects.equals(game.whiteUsername(), username)){
             game.setWhiteUsername(null);
-            gameDAO.updateWhite(username, command.getGameID());
+            gameDAO.updateWhite(null, command.getGameID());
         }
 
         // Remove them from the list of connections and broadcast it
@@ -270,22 +270,24 @@ public class WSHANDLER {
             if (tokenModel!= null)
                 username = tokenModel.username();
 
-            // If the user is in the game, delete the game
-            if (game.whiteUsername().equals(username) || game.blackUsername().equals(username))
-                gameDAO.delete(command.getGameID());
-
             // Check if the user is in the game
-            if (!game.whiteUsername().equals(username) && !game.blackUsername().equals(username)){
+            if (!Objects.equals(game.whiteUsername(), username) && !Objects.equals(game.blackUsername(), username)) {
                 ErrorMessage errorMessage = new ErrorMessage("Error: Unauthorized");
                 session.getRemote().sendString(new Gson().toJson(errorMessage));
             }
             // Send the message they left the game
             else{
+                // If the user is in the game, set the game as done
+                game.setBlackUsername("DONE");
+                gameDAO.updateBlack("DONE", command.getGameID());
+                game.setWhiteUsername("DONE");
+                gameDAO.updateWhite("DONE", command.getGameID());
+
                 // Remove them from the list and send the notification
                 String message = (username + " has left the game");
                 NotificationMessage notificationMessage = new NotificationMessage(message);
-                connectionManager.remove(username);
                 connectionManager.broadcastALL(username, notificationMessage);
+                connectionManager.remove(username);
             }
         }
     }
