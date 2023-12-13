@@ -5,21 +5,14 @@ import chess.ChessBoard;
 import chess.Board;
 
 import com.google.gson.*;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonToken;
-import com.google.gson.stream.JsonWriter;
-import response.ListGames_Resp;
 import webSocketMessages.serverMessages.ErrorMessage;
 import webSocketMessages.serverMessages.NotificationMessage;
 import webSocketMessages.serverMessages.ServerMessage;
 import webSocketMessages.userCommands.UserGameCommand;
 
 import javax.websocket.*;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.net.URI;
-import java.util.Scanner;
 
 public class webSocketClient extends Endpoint {
     public Session session;
@@ -37,7 +30,7 @@ public class webSocketClient extends Endpoint {
                     ServerMessage serverTalk = new Gson().fromJson(message, ServerMessage.class);
 
                     switch (serverTalk.getServerMessageType()) {
-                        case LOAD_GAME -> notificationHandler.updateBoard(deserializeGame(deserializeMessage(message)));
+                        case LOAD_GAME -> notificationHandler.updateBoard(deserializeGame(message.substring(8, message.length()-33)));
                         case NOTIFICATION -> notificationHandler.message(new Gson().fromJson(message, NotificationMessage.class).message);
                         case ERROR -> notificationHandler.error(new Gson().fromJson(message, ErrorMessage.class).toString());
                     }
@@ -53,16 +46,6 @@ public class webSocketClient extends Endpoint {
 
     @Override
     public void onOpen(javax.websocket.Session session, EndpointConfig endpointConfig) {}
-
-    private String deserializeMessage(String message) {
-        Scanner scanner = new Scanner(message);
-        String gameString = null;
-        while(scanner.hasNext()){
-            String temp = scanner.nextLine();
-            gameString = temp.substring(8, temp.length()-33);
-        }
-        return gameString;
-    }
 
     public Game deserializeGame(String gameString){
         GsonBuilder gsonBuilder = new GsonBuilder();

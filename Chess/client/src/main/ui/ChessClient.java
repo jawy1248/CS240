@@ -418,8 +418,6 @@ public class ChessClient implements NotificationHandler {
             System.out.println("In check");
 
         try {
-            chessGame.makeMove(move);
-            updateBoard(chessGame);
             MakeMove command = new MakeMove(gameID, authToken, username, move);
             ws.send(command);
         } catch(InvalidMoveException e){
