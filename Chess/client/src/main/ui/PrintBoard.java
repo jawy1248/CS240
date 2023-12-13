@@ -185,23 +185,23 @@ public class PrintBoard {
 
         for(int i=0; i<8; i++){
             for(int j=0; j<8; j++){
-                boolean white = ( (i + j) % 2 == 0 );
+                boolean black = ( (i + j) % 2 == 1 );
                 if(j == 0){
                     System.out.print(SET_BG_COLOR_LIGHT_GREY);
                     System.out.print(" ");
                     System.out.print(1+i);
                     System.out.print(" ");
                 }
-                if(!white){
+                if(black){
                     System.out.print(SET_BG_COLOR_DARK_GREEN);
                     if(!board[i][j].equals(EMPTY))
                         System.out.print(SET_TEXT_COLOR_WHITE);
-                    System.out.print(board[i][j]);
+                    System.out.print(board[i][7-j]);
                 } else {
                     System.out.print(SET_BG_COLOR_DARK_GREY);
                     if(!board[i][j].equals(EMPTY))
                         System.out.print(SET_TEXT_COLOR_WHITE);
-                    System.out.print(board[i][j]);
+                    System.out.print(board[i][7-j]);
                 }
                 System.out.print(SET_TEXT_COLOR_WHITE);
                 if(j==7){
