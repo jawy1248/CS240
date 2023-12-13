@@ -5,14 +5,21 @@ import chess.ChessBoard;
 import chess.Board;
 
 import com.google.gson.*;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonToken;
+import com.google.gson.stream.JsonWriter;
+import response.ListGames_Resp;
 import webSocketMessages.serverMessages.ErrorMessage;
 import webSocketMessages.serverMessages.NotificationMessage;
 import webSocketMessages.serverMessages.ServerMessage;
 import webSocketMessages.userCommands.UserGameCommand;
 
 import javax.websocket.*;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.net.URI;
+import java.util.Scanner;
 
 public class webSocketClient extends Endpoint {
     public Session session;
@@ -28,15 +35,11 @@ public class webSocketClient extends Endpoint {
             public void onMessage(String message) {
                 try{
                     ServerMessage serverTalk = new Gson().fromJson(message, ServerMessage.class);
-                    // Register type adapters
-                    GsonBuilder gsonBuilder = new GsonBuilder();
-                    gsonBuilder.registerTypeAdapter(ChessBoard.class, new ChessBoardAdapter());
-                    Gson gson = gsonBuilder.create();
 
                     switch (serverTalk.getServerMessageType()) {
-                        case LOAD_GAME -> notificationHandler.updateBoard(gson.fromJson(message, ChessGame.class));
-                        case NOTIFICATION -> notificationHandler.message(gson.fromJson(message, NotificationMessage.class).message);
-                        case ERROR -> notificationHandler.error(gson.fromJson(message, ErrorMessage.class).toString());
+                        case LOAD_GAME -> notificationHandler.updateBoard(deserializeGame(deserializeMessage(message)));
+                        case NOTIFICATION -> notificationHandler.message(new Gson().fromJson(message, NotificationMessage.class).message);
+                        case ERROR -> notificationHandler.error(new Gson().fromJson(message, ErrorMessage.class).toString());
                     }
                 }catch (Exception e){
                     throw new RuntimeException(e);
@@ -51,6 +54,23 @@ public class webSocketClient extends Endpoint {
     @Override
     public void onOpen(javax.websocket.Session session, EndpointConfig endpointConfig) {}
 
+    private String deserializeMessage(String message) {
+        Scanner scanner = new Scanner(message);
+        String gameString = null;
+        while(scanner.hasNext()){
+            String temp = scanner.nextLine();
+            gameString = temp.substring(8, temp.length()-33);
+        }
+        return gameString;
+    }
+
+    public Game deserializeGame(String gameString){
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.registerTypeAdapter(ChessBoard.class, new ChessBoardAdapter());
+        Gson gson = gsonBuilder.create();
+        return gson.fromJson(gameString, Game.class);
+    }
+
     public static class ChessBoardAdapter implements JsonDeserializer<ChessBoard> {
         public ChessBoard deserialize(JsonElement el, Type type, JsonDeserializationContext ctx) throws JsonParseException {
             GsonBuilder gsonBuilder = new GsonBuilder();
@@ -59,6 +79,7 @@ public class webSocketClient extends Endpoint {
             return gson.fromJson(el, Board.class);
         }
     }
+
     public static class ChessPieceAdapter implements JsonDeserializer<ChessPiece> {
         public ChessPiece deserialize(JsonElement el, Type type, JsonDeserializationContext ctx) throws JsonParseException {
             return new Gson().fromJson(el, Piece.class);

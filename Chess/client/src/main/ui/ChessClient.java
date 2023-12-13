@@ -23,7 +23,6 @@ public class ChessClient implements NotificationHandler {
     public String gameID;
     public PrintBoard board = new PrintBoard();
     public ChessGame chessGame;
-    public ChessBoard chessBoard;
     public String color;
     public ChessGame.TeamColor teamColor;
 

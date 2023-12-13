@@ -62,6 +62,9 @@ public class WSHANDLER {
         // Open databases and get game and auth of user
         Game_Record game = gameDAO.findGame(Integer.parseInt(command.getGameID()));
         Auth_Record tokenModel= authDAO.findAuth(command.getAuthString());
+        Game tempGame = null;
+        if(game != null)
+            tempGame = (Game) game.game();
 
         // Set the username from the authKey
         String username = null;
@@ -103,7 +106,7 @@ public class WSHANDLER {
             }
 
             // Send message to others in database
-            LoadMessage loadMessage = new LoadMessage((Game) game.game());
+            LoadMessage loadMessage = new LoadMessage(tempGame);
             session.getRemote().sendString(new Gson().toJson(loadMessage));
             connectionManager.add(username, session);
 
