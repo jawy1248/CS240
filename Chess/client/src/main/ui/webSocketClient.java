@@ -28,12 +28,9 @@ public class webSocketClient extends Endpoint {
                     ServerMessage serverTalk = new Gson().fromJson(message, ServerMessage.class);
 
                     switch (serverTalk.getServerMessageType()) {
-                        case LOAD_GAME:
-                            notificationHandler.updateBoard(gameFromJson(message));
-                        case NOTIFICATION:
-                            notificationHandler.message(new Gson().fromJson(message, NotificationMessage.class).message);
-                        case ERROR:
-                            notificationHandler.error(new Gson().fromJson(message, ErrorMessage.class).toString());
+                        case LOAD_GAME -> notificationHandler.updateBoard(gameFromJson(message));
+                        case NOTIFICATION -> notificationHandler.message(new Gson().fromJson(message, NotificationMessage.class).message);
+                        case ERROR -> notificationHandler.error(new Gson().fromJson(message, ErrorMessage.class).toString());
                     }
                 }catch (Exception e){
                     throw new RuntimeException(e);
